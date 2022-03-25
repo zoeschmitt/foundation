@@ -1,0 +1,5 @@
+.env
+node_modules
+.dynamodb
+.esbuild
+.DS_Store
