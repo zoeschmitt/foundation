@@ -1,7 +1,10 @@
 import type { AWS } from "@serverless/typescript";
 import dynamoDbTables from "./resources/dynamodb-tables";
 
-import hello from "@functions/hello";
+import createOrg from "@functions/create-org";
+import getOrg from "@functions/get-org";
+import getWallet from "@functions/get-wallet";
+import createWallet from "@functions/create-wallet";
 
 const serverlessConfiguration: AWS = {
   service: "polygon-api",
@@ -52,7 +55,7 @@ const serverlessConfiguration: AWS = {
     },
   },
   // import the function via paths
-  functions: { hello },
+  functions: { createOrg, getOrg, getWallet, createWallet },
   package: { individually: true },
   custom: {
     stage: "${opt:stage, self:provider.stage}",
