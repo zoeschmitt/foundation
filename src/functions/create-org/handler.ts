@@ -134,6 +134,7 @@ export const createOrg: APIGatewayProxyHandler = async (
     console.log(e);
     return handlerResponse(StatusCode.ERROR, { message: e });
   }
+  // hey whats up
 };
 
 export const main = middy(createOrg)

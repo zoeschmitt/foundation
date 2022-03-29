@@ -6,7 +6,7 @@ export const getOrgWithApiKey = async (headers) => {
       headers["x-api-key"] !== undefined
         ? headers["x-api-key"]
         : headers["X-API-KEY"];
-    const tableName = process.env.X_TABLE;
+    const tableName = process.env.DB_TABLE;
     const params = {
       TableName: tableName,
       Key: {

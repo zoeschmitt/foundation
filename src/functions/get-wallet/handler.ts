@@ -14,7 +14,7 @@ export const getWallet: APIGatewayProxyHandler = async (
   event: APIGatewayEvent,
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
-  const X_TABLE = process.env.X_TABLE;
+  const DB_TABLE = process.env.DB_TABLE;
   const dynamoService = new DynamoService();
 
   try {
@@ -34,7 +34,7 @@ export const getWallet: APIGatewayProxyHandler = async (
     let walletData;
     try {
       walletData = await dynamoService.get({
-        TableName: X_TABLE,
+        TableName: DB_TABLE,
         Key: {
           PK: `ORG#${org.orgId}#WAL#${walletId}`,
           SK: `ORG#${org.orgId}`,

@@ -59,7 +59,7 @@ const serverlessConfiguration: AWS = {
   package: { individually: true },
   custom: {
     stage: "${opt:stage, self:provider.stage}",
-    db_table: "polygon-${opt:stage, self:provider.stage}",
+    db_table: "polygon-api-${opt:stage, self:provider.stage}",
     table_throughputs: {
       prod: 5,
       default: 1,
@@ -72,17 +72,17 @@ const serverlessConfiguration: AWS = {
         prod: "mainnet",
       },
       TEST_NETWORK: "mumbai",
-      OUR_WALLET: { dev: "dev/wallet", prod: "prod/wallet" },
+      WALLET: { dev: "prod/wallet", prod: "prod/wallet" },
       ALCHEMY_KEY: {
         dev: "dev/alchemy",
-        prod: "prod/alchemy",
+        prod: "dev/alchemy",
       },
       TEST_ALCHEMY_KEY: "dev/alchemy",
       NFT_CONTRACT_ADDRESS: {
         dev: "",
         prod: "",
       },
-      NFT_STORAGE_API_KEY: "",
+      NFT_STORAGE_API_KEY: "prod/nftStorageApiKey",
     },
     dynamodb: {
       stages: ["dev"],
