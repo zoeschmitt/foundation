@@ -4,8 +4,6 @@ import {
   APIGatewayProxyResult,
   Context,
 } from "aws-lambda";
-import env from "../../config/client";
-import { AlchemyProvider } from "@ethersproject/providers";
 import DynamoService from "../../services/dynamo.service";
 import { StatusCode } from "src/enums/status-code.enum";
 import { handlerResponse } from "src/utils/handler-response";
@@ -13,9 +11,6 @@ import createZWallet from "src/utils/wallet/create-z-wallet";
 import { v4 as uuidv4 } from "uuid";
 import { getOrgWithApiKey } from "src/utils/org/get-org-with-api-key";
 import { Org } from "src/types/org.type";
-import { getSecret } from "src/utils/get-secret";
-import { getEnv } from "src/utils/env-utils";
-import { parseAlchemyApiKey } from "src/utils/parse-alchemy-api-key";
 
 export const createWallet: APIGatewayProxyHandler = async (
   event: APIGatewayEvent,
@@ -26,7 +21,6 @@ export const createWallet: APIGatewayProxyHandler = async (
 
   const DB_TABLE = process.env.DB_TABLE;
   const dynamoService = new DynamoService();
-  const alchemyApiKey = await getSecret(getEnv("ALCHEMY_KEY"));
 
   try {
     // GET ORG ASSOCIATED WITH API KEY -----------------------------------
@@ -39,11 +33,6 @@ export const createWallet: APIGatewayProxyHandler = async (
         StatusCode.ERROR,
         "Error authenticating API key, our team has been notiifed."
       );
-
-    const provider = new AlchemyProvider(
-      env.ethNetwork,
-      await parseAlchemyApiKey(alchemyApiKey["key"])
-    );
 
     // CREATE API KEY AND REGISTER IT WITH IMX  -----------------------------------
 

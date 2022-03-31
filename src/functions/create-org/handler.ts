@@ -21,6 +21,9 @@ import httpErrorHandler from "@middy/http-error-handler";
 import jsonSchemaError from "src/middleware/json-schema-error";
 import { getSecret } from "src/utils/get-secret";
 import { Royalties } from "src/types/royalties.type";
+import { AlchemyProvider } from "@ethersproject/providers";
+import { parseAlchemyApiKey } from "src/utils/parse-alchemy-api-key";
+import deployNFTContract from "../../../scripts/deploy-nft-contract";
 
 export const createOrg: APIGatewayProxyHandler = async (
   event: APIGatewayEvent,
@@ -56,20 +59,34 @@ export const createOrg: APIGatewayProxyHandler = async (
 
   try {
     const network = process.env.NETWORK;
-    const ourWallet = (await getSecret(process.env.OUR_WALLET)) as any;
+    const ourWallet = (await getSecret(process.env.WALLET)) as any;
 
     /// CREATE ORG ETH WALLET REGISTER IT -----------------------------------
     const orgWallet: ZWallet = await createZWallet();
 
+    /// DEPLOY ORG CONTRACT -----------------------------------
+    const alchemyApiKey = await getSecret(getEnv("ALCHEMY_KEY"));
+
+    const contractRequest = {
+      provider: new AlchemyProvider(
+        network, // mumbai
+        await parseAlchemyApiKey(alchemyApiKey["key"])
+      ),
+      name: org.nftName,
+      symbol: org.nftSymbol,
+      privateKey: orgWallet.privateKey,
+    };
+    const contractResponse = await deployNFTContract(contractRequest);
+
     /// CREATE ORG OBJECT -----------------------------------
-    const xImxOrg: Org = {
+    const newOrg: Org = {
       orgId: orgId,
       name: org.name,
       tier: org.tier,
       apiKey: org.apiKey,
       wallet: orgWallet,
       email: org.email,
-      contract: getEnv("NFT_CONTRACT_ADDRESS"),
+      contract: contractResponse.contractAddress,
       royalties: [
         {
           recipient: ourWallet.address,
@@ -84,11 +101,11 @@ export const createOrg: APIGatewayProxyHandler = async (
         recipient: orgWallet.address,
         percentage: org.orgRoyaltyPercentage,
       };
-      xImxOrg.royalties.push(royalties);
+      newOrg.royalties.push(royalties);
     }
 
     if (org.creatorRoyaltyPercentage)
-      xImxOrg.creatorRoyaltyPercentage = org.creatorRoyaltyPercentage;
+      newOrg.creatorRoyaltyPercentage = org.creatorRoyaltyPercentage;
 
     /// CREATE DYNAMO OBJECTS -----------------------------------
     const orgKeyData = {
@@ -96,7 +113,7 @@ export const createOrg: APIGatewayProxyHandler = async (
       Item: {
         PK: `KEY#${org.apiKey}`,
         SK: `KEY#${org.apiKey}`,
-        ...xImxOrg,
+        ...newOrg,
       },
     };
 
@@ -105,7 +122,7 @@ export const createOrg: APIGatewayProxyHandler = async (
       Item: {
         PK: `ORG#${orgId}`,
         SK: `METADATA#${orgId}`,
-        ...xImxOrg,
+        ...newOrg,
       },
     };
 
@@ -126,15 +143,14 @@ export const createOrg: APIGatewayProxyHandler = async (
 
     /// RETURN RESPONSE -----------------------------------
 
-    console.log(xImxOrg);
+    console.log(newOrg);
     console.log(`CreateOrg - Successful`);
-    return handlerResponse(StatusCode.OK, xImxOrg);
+    return handlerResponse(StatusCode.OK, newOrg);
   } catch (e) {
     console.log(`CreateOrg - Failed`);
     console.log(e);
     return handlerResponse(StatusCode.ERROR, { message: e });
   }
-  // hey whats up
 };
 
 export const main = middy(createOrg)

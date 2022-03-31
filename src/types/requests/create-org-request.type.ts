@@ -3,6 +3,8 @@ export type CreateOrgRequest = {
   tier: string;
   apiKey: string;
   email: string;
+  nftName: string;
+  nftSymbol: string;
   orgRoyaltyPercentage?: number;
   creatorRoyaltyPercentage?: number;
 };

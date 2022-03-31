@@ -49,8 +49,6 @@ const serverlessConfiguration: AWS = {
       ALCHEMY_KEY:
         "${self:custom.environment.ALCHEMY_KEY.${self:custom.stage}}",
       TEST_ALCHEMY_KEY: "${self:custom.environment.TEST_ALCHEMY_KEY}",
-      NFT_CONTRACT_ADDRESS:
-        "${self:custom.environment.NFT_CONTRACT_ADDRESS.${self:custom.stage}}",
       NFT_STORAGE_API_KEY: "${self:custom.environment.NFT_STORAGE_API_KEY}",
     },
   },
@@ -68,20 +66,16 @@ const serverlessConfiguration: AWS = {
       "${self:custom.TABLE_THROUGHPUTS.${self:custom.stage}, self:custom.table_throughputs.default}",
     environment: {
       NETWORK: {
-        dev: "mumbai",
+        dev: "maticmum",
         prod: "mainnet",
       },
-      TEST_NETWORK: "mumbai",
+      TEST_NETWORK: "maticmum",
       WALLET: { dev: "prod/wallet", prod: "prod/wallet" },
       ALCHEMY_KEY: {
         dev: "dev/alchemy",
-        prod: "dev/alchemy",
+        prod: "prod/alchemy",
       },
       TEST_ALCHEMY_KEY: "dev/alchemy",
-      NFT_CONTRACT_ADDRESS: {
-        dev: "",
-        prod: "",
-      },
       NFT_STORAGE_API_KEY: "prod/nftStorageApiKey",
     },
     dynamodb: {
