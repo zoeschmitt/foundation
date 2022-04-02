@@ -21,7 +21,7 @@ export const getOrg: APIGatewayProxyHandler = async (
         message: "orgId not found in path.",
       });
 
-    const orgId = event.pathParameters.orgId;
+    const orgId = event.queryStringParameters.orgId;
 
     const params = {
       TableName: DB_TABLE,

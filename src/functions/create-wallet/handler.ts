@@ -24,7 +24,6 @@ export const createWallet: APIGatewayProxyHandler = async (
 
   try {
     // GET ORG ASSOCIATED WITH API KEY -----------------------------------
-
     const org: Org = (await getOrgWithApiKey(event["headers"])) as Org;
     console.log(org);
 

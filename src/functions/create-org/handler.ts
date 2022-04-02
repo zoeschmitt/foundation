@@ -73,7 +73,7 @@ export const createOrg: APIGatewayProxyHandler = async (
       ),
       name: org.nftName,
       symbol: org.nftSymbol,
-      privateKey: orgWallet.privateKey,
+      privateKey: ourWallet.privateKey,
     };
     const contractResponse = await deployNFTContract(contractRequest);
 
