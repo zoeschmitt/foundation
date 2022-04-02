@@ -51,7 +51,7 @@ NFT ERC721 smart contract in `contracts/`. Inherits from OpenZeppelins ERC721 co
 
 ### Deploying
 
-Currently our deploy function is in `src/scripts/` and uses the binary/abi generated from hardhat compilation in `artifacts/`. Use `npx ts-node src/scripts/deployNFTContract` to deploy a contract and visit the file itself to change the config for testnet/mainnet. In the future this function will be used to automate the process.
+Currently the deploy function is in `src/scripts/` and uses the binary/abi generated from hardhat compilation in `artifacts/`. Use `npx ts-node scripts/deploy-nft-contract` to deploy a contract and visit the file itself to change the config for testnet/mainnet. In the future this function will be used to automate the process.
 
 -----
 

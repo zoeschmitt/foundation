@@ -1,7 +1,10 @@
 import type { AWS } from "@serverless/typescript";
 import dynamoDbTables from "./resources/dynamodb-tables";
 
-import hello from "@functions/hello";
+import createOrg from "@functions/create-org";
+import getOrg from "@functions/get-org";
+import getWallet from "@functions/get-wallet";
+import createWallet from "@functions/create-wallet";
 
 const serverlessConfiguration: AWS = {
   service: "polygon-api",
@@ -46,17 +49,15 @@ const serverlessConfiguration: AWS = {
       ALCHEMY_KEY:
         "${self:custom.environment.ALCHEMY_KEY.${self:custom.stage}}",
       TEST_ALCHEMY_KEY: "${self:custom.environment.TEST_ALCHEMY_KEY}",
-      NFT_CONTRACT_ADDRESS:
-        "${self:custom.environment.NFT_CONTRACT_ADDRESS.${self:custom.stage}}",
       NFT_STORAGE_API_KEY: "${self:custom.environment.NFT_STORAGE_API_KEY}",
     },
   },
   // import the function via paths
-  functions: { hello },
+  functions: { createOrg, getOrg, getWallet, createWallet },
   package: { individually: true },
   custom: {
     stage: "${opt:stage, self:provider.stage}",
-    db_table: "polygon-${opt:stage, self:provider.stage}",
+    db_table: "polygon-api-${opt:stage, self:provider.stage}",
     table_throughputs: {
       prod: 5,
       default: 1,
@@ -65,21 +66,17 @@ const serverlessConfiguration: AWS = {
       "${self:custom.TABLE_THROUGHPUTS.${self:custom.stage}, self:custom.table_throughputs.default}",
     environment: {
       NETWORK: {
-        dev: "mumbai",
+        dev: "maticmum",
         prod: "mainnet",
       },
-      TEST_NETWORK: "mumbai",
-      OUR_WALLET: { dev: "dev/wallet", prod: "prod/wallet" },
+      TEST_NETWORK: "maticmum",
+      WALLET: { dev: "prod/wallet", prod: "prod/wallet" },
       ALCHEMY_KEY: {
         dev: "dev/alchemy",
         prod: "prod/alchemy",
       },
       TEST_ALCHEMY_KEY: "dev/alchemy",
-      NFT_CONTRACT_ADDRESS: {
-        dev: "",
-        prod: "",
-      },
-      NFT_STORAGE_API_KEY: "",
+      NFT_STORAGE_API_KEY: "prod/nftStorageApiKey",
     },
     dynamodb: {
       stages: ["dev"],
