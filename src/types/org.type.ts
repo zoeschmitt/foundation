@@ -9,6 +9,7 @@ export type Org = {
   email: string;
   wallet: ZWallet;
   contract: string;
+  network: string;
   royalties?: Royalties[];
   creatorRoyaltyPercentage?: number;
 };

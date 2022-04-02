@@ -12,7 +12,6 @@ import { Org } from "src/types/org.type";
 import { ZWallet } from "src/types/z-wallet.type";
 import createZWallet from "src/utils/wallet/create-z-wallet";
 import { v4 as uuid } from "uuid";
-import { getEnv } from "src/utils/env-utils";
 import validator from "@middy/validator";
 import middy from "@middy/core";
 import inputSchema from "./schema";
@@ -61,11 +60,11 @@ export const createOrg: APIGatewayProxyHandler = async (
     const network = process.env.NETWORK;
     const ourWallet = (await getSecret(process.env.WALLET)) as any;
 
-    /// CREATE ORG ETH WALLET REGISTER IT -----------------------------------
+    /// CREATE ORG WALLET -----------------------------------
     const orgWallet: ZWallet = await createZWallet();
 
     /// DEPLOY ORG CONTRACT -----------------------------------
-    const alchemyApiKey = await getSecret(getEnv("ALCHEMY_KEY"));
+    const alchemyApiKey = await getSecret(process.env.ALCHEMY_KEY);
 
     const contractRequest = {
       provider: new AlchemyProvider(
@@ -87,6 +86,7 @@ export const createOrg: APIGatewayProxyHandler = async (
       wallet: orgWallet,
       email: org.email,
       contract: contractResponse.contractAddress,
+      network: network,
       royalties: [
         {
           recipient: ourWallet.address,

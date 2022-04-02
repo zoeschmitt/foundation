@@ -199,7 +199,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648528274645-2022-03-29T04:31:14.645Z/createOrg.zip"
+          "S3Key": "serverless/polygon-api/dev/1648924283346-2022-04-02T18:31:23.346Z/createOrg.zip"
         },
         "Handler": "src/functions/create-org/handler.main",
         "Runtime": "nodejs14.x",
@@ -212,13 +212,13 @@
             "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
             "STAGE": "dev",
             "DB_TABLE": "polygon-api-dev",
-            "NETWORK": "mumbai",
-            "TEST_NETWORK": "mumbai",
+            "NETWORK": "maticmum",
+            "TEST_NETWORK": "maticmum",
             "WALLET": "prod/wallet",
             "ALCHEMY_KEY": "dev/alchemy",
             "TEST_ALCHEMY_KEY": "dev/alchemy",
-            "NFT_CONTRACT_ADDRESS": "",
-            "NFT_STORAGE_API_KEY": ""
+            "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+            "PRIVATE_KEY": "prod/wallet"
           }
         },
         "Role": {
@@ -239,7 +239,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648528274645-2022-03-29T04:31:14.645Z/getOrg.zip"
+          "S3Key": "serverless/polygon-api/dev/1648924283346-2022-04-02T18:31:23.346Z/getOrg.zip"
         },
         "Handler": "src/functions/get-org/handler.main",
         "Runtime": "nodejs14.x",
@@ -252,13 +252,13 @@
             "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
             "STAGE": "dev",
             "DB_TABLE": "polygon-api-dev",
-            "NETWORK": "mumbai",
-            "TEST_NETWORK": "mumbai",
+            "NETWORK": "maticmum",
+            "TEST_NETWORK": "maticmum",
             "WALLET": "prod/wallet",
             "ALCHEMY_KEY": "dev/alchemy",
             "TEST_ALCHEMY_KEY": "dev/alchemy",
-            "NFT_CONTRACT_ADDRESS": "",
-            "NFT_STORAGE_API_KEY": ""
+            "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+            "PRIVATE_KEY": "prod/wallet"
           }
         },
         "Role": {
@@ -279,7 +279,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648528274645-2022-03-29T04:31:14.645Z/getWallet.zip"
+          "S3Key": "serverless/polygon-api/dev/1648924283346-2022-04-02T18:31:23.346Z/getWallet.zip"
         },
         "Handler": "src/functions/get-wallet/handler.main",
         "Runtime": "nodejs14.x",
@@ -292,13 +292,13 @@
             "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
             "STAGE": "dev",
             "DB_TABLE": "polygon-api-dev",
-            "NETWORK": "mumbai",
-            "TEST_NETWORK": "mumbai",
+            "NETWORK": "maticmum",
+            "TEST_NETWORK": "maticmum",
             "WALLET": "prod/wallet",
             "ALCHEMY_KEY": "dev/alchemy",
             "TEST_ALCHEMY_KEY": "dev/alchemy",
-            "NFT_CONTRACT_ADDRESS": "",
-            "NFT_STORAGE_API_KEY": ""
+            "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+            "PRIVATE_KEY": "prod/wallet"
           }
         },
         "Role": {
@@ -319,7 +319,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648528274645-2022-03-29T04:31:14.645Z/createWallet.zip"
+          "S3Key": "serverless/polygon-api/dev/1648924283346-2022-04-02T18:31:23.346Z/createWallet.zip"
         },
         "Handler": "src/functions/create-wallet/handler.main",
         "Runtime": "nodejs14.x",
@@ -332,13 +332,13 @@
             "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
             "STAGE": "dev",
             "DB_TABLE": "polygon-api-dev",
-            "NETWORK": "mumbai",
-            "TEST_NETWORK": "mumbai",
+            "NETWORK": "maticmum",
+            "TEST_NETWORK": "maticmum",
             "WALLET": "prod/wallet",
             "ALCHEMY_KEY": "dev/alchemy",
             "TEST_ALCHEMY_KEY": "dev/alchemy",
-            "NFT_CONTRACT_ADDRESS": "",
-            "NFT_STORAGE_API_KEY": ""
+            "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+            "PRIVATE_KEY": "prod/wallet"
           }
         },
         "Role": {
@@ -352,17 +352,7 @@
         "CreateWalletLogGroup"
       ]
     },
-    "GetOrgLambdaVersion3fWbxBoJk4DkUsTClwkeRN1Fjt6AEYW97lhKMfYYqM": {
-      "Type": "AWS::Lambda::Version",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "GetOrgLambdaFunction"
-        },
-        "CodeSha256": "dyF8VZi9MNqrI9JsqBdhdc9lJce4gWSivCm+g9g4u38="
-      }
-    },
-    "GetWalletLambdaVersionwAMYQl4iVA127hTsezoytoeKRGcBu6kv7Mdh0Q6cJ2Q": {
+    "GetWalletLambdaVersiones4XMn4BrkpyJ5aj1fQOYIU28JqPUrvdE1DYl2IpuQ": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -372,24 +362,34 @@
         "CodeSha256": "CVxEkHk28qTvFl1sBGbjTgp1lBWutCZLfFUuQ+wDLi4="
       }
     },
-    "CreateWalletLambdaVersion13FDB9qS0RfF29SisLZsnslfweWbdvVyi2HMCpXEJw": {
+    "GetOrgLambdaVersiongZwHox1xCl7S3I2WBJMhEqKZkcNGWG2B0Y3DtrrGVY": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetOrgLambdaFunction"
+        },
+        "CodeSha256": "dyF8VZi9MNqrI9JsqBdhdc9lJce4gWSivCm+g9g4u38="
+      }
+    },
+    "CreateWalletLambdaVersionXj7U9aWnq7L01D7BUp63xKvjbJFZBCuEhiqfLAV9E": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateWalletLambdaFunction"
         },
-        "CodeSha256": "Ok62XNIJ3sjjqBaSJezWTRho7/x4Hj0nOWGhU//fgUA="
+        "CodeSha256": "zMjUcoCWNUqQ9AI3jWsfatj2ncRTDXlgOsS8+ev9Z/s="
       }
     },
-    "CreateOrgLambdaVersionnWIutCg7aCjSn48LXKedoKtuC7ea7AbNH17MS7p6cU": {
+    "CreateOrgLambdaVersionbI1j9hFldXAoDePyCM316QmL0aqcgJyN7TA2bJ9lpc": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateOrgLambdaFunction"
         },
-        "CodeSha256": "TMwlmkfBWGHn+2/lyeVkjaQmnemYrWPIJ2a0hXre7RU="
+        "CodeSha256": "SvdrjCkKekqCp9PPIhlWxed7mOheXyqLEHb9KLuKu+o="
       }
     },
     "ApiGatewayRestApi": {
@@ -873,8 +873,11 @@
                 "email": {
                   "type": "string"
                 },
-                "metadataSchema": {
-                  "type": "array"
+                "nftName": {
+                  "type": "string"
+                },
+                "nftSymbol": {
+                  "type": "string"
                 },
                 "orgRoyaltyPercentage": {
                   "type": "number",
@@ -890,14 +893,15 @@
                 "tier",
                 "apiKey",
                 "email",
-                "metadataSchema"
+                "nftName",
+                "nftSymbol"
               ]
             }
           }
         }
       }
     },
-    "ApiGatewayDeployment1648528273647": {
+    "ApiGatewayDeployment1648924282135": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -1105,28 +1109,28 @@
         "Name": "sls-polygon-api-dev-ServerlessDeploymentBucketName"
       }
     },
-    "GetOrgLambdaFunctionQualifiedArn": {
-      "Description": "Current Lambda function version",
-      "Value": {
-        "Ref": "GetOrgLambdaVersion3fWbxBoJk4DkUsTClwkeRN1Fjt6AEYW97lhKMfYYqM"
-      },
-      "Export": {
-        "Name": "sls-polygon-api-dev-GetOrgLambdaFunctionQualifiedArn"
-      }
-    },
     "GetWalletLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetWalletLambdaVersionwAMYQl4iVA127hTsezoytoeKRGcBu6kv7Mdh0Q6cJ2Q"
+        "Ref": "GetWalletLambdaVersiones4XMn4BrkpyJ5aj1fQOYIU28JqPUrvdE1DYl2IpuQ"
       },
       "Export": {
         "Name": "sls-polygon-api-dev-GetWalletLambdaFunctionQualifiedArn"
       }
     },
+    "GetOrgLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GetOrgLambdaVersiongZwHox1xCl7S3I2WBJMhEqKZkcNGWG2B0Y3DtrrGVY"
+      },
+      "Export": {
+        "Name": "sls-polygon-api-dev-GetOrgLambdaFunctionQualifiedArn"
+      }
+    },
     "CreateWalletLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateWalletLambdaVersion13FDB9qS0RfF29SisLZsnslfweWbdvVyi2HMCpXEJw"
+        "Ref": "CreateWalletLambdaVersionXj7U9aWnq7L01D7BUp63xKvjbJFZBCuEhiqfLAV9E"
       },
       "Export": {
         "Name": "sls-polygon-api-dev-CreateWalletLambdaFunctionQualifiedArn"
@@ -1135,7 +1139,7 @@
     "CreateOrgLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateOrgLambdaVersionnWIutCg7aCjSn48LXKedoKtuC7ea7AbNH17MS7p6cU"
+        "Ref": "CreateOrgLambdaVersionbI1j9hFldXAoDePyCM316QmL0aqcgJyN7TA2bJ9lpc"
       },
       "Export": {
         "Name": "sls-polygon-api-dev-CreateOrgLambdaFunctionQualifiedArn"

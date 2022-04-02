@@ -13,7 +13,7 @@ type Props = {
 const deployNFTContract = async (props: Props) => {
   try {
     const { provider, name, symbol, privateKey } = props;
-    // console.log(`deployNFTContract: ${JSON.stringify(props)}`);
+    console.log(`deployNFTContract: ${JSON.stringify(provider)}`);
 
     let wallet = new ethers.Wallet(privateKey, provider);
     let factory = new ethers.ContractFactory(
@@ -37,6 +37,10 @@ const deployNFTContract = async (props: Props) => {
       contractTxnHash: contract.deployTransaction.hash,
     };
   } catch (e) {
+    if (e["reason"]) {
+      console.log(e.reason);
+      throw e.reason;
+    }
     console.log(e);
     throw e;
   }
