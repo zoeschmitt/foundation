@@ -191,7 +191,7 @@ export const createNFT: APIGatewayProxyHandler = async (
       ipfsHash: nftStorageResponse.ipnft,
       royalties: [],
       filename: nft.filename,
-      metadata: nftStorageResponse,
+      metadata: metadata,
       isListed: false,
       listPrice: 0,
       openseaURL: `${openseaBaseUrl}/${org.contract}/${tokenId}`,

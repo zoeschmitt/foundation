@@ -6,6 +6,10 @@ import getOrg from "@functions/get-org";
 import getWallet from "@functions/get-wallet";
 import createWallet from "@functions/create-wallet";
 import createNFT from "@functions/create-nft";
+import getNFT from "@functions/get-nft";
+import getAllNFTs from "@functions/get-all-nfts";
+import getUserNFTs from "@functions/get-user-nfts";
+import listNFT from "@functions/list-nft";
 
 const serverlessConfiguration: AWS = {
   service: "polygon-api",
@@ -56,7 +60,17 @@ const serverlessConfiguration: AWS = {
     },
   },
   // import the function via paths
-  functions: { createOrg, getOrg, getWallet, createWallet, createNFT },
+  functions: {
+    createOrg,
+    getOrg,
+    getWallet,
+    createWallet,
+    createNFT,
+    getNFT,
+    getAllNFTs,
+    getUserNFTs,
+    listNFT,
+  },
   package: { individually: true },
   custom: {
     stage: "${opt:stage, self:provider.stage}",

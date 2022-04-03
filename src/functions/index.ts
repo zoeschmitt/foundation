@@ -3,3 +3,7 @@ export { default as getOrg } from './get-org';
 export { default as getWallet } from './get-wallet';
 export { default as createWallet } from './create-wallet';
 export { default as createNFT } from './create-nft';
+export { default as getNFT } from './get-nft';
+export { default as getAllNFTs } from './get-all-nfts';
+export { default as getUserNFTs } from './get-user-nfts';
+export { default as listNFT } from './list-nft';

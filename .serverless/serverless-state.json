@@ -1,0 +1,2853 @@
+{
+  "service": {
+    "service": "polygon-api",
+    "serviceObject": {
+      "name": "polygon-api"
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs14.x",
+      "apiGateway": {
+        "minimumCompressionSize": 1024,
+        "shouldStartNameWithService": true
+      },
+      "lambdaHashingVersion": "20201221",
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:DescribeTable",
+            "dynamodb:Query",
+            "dynamodb:Scan",
+            "dynamodb:GetItem",
+            "dynamodb:PutItem",
+            "dynamodb:UpdateItem",
+            "dynamodb:DeleteItem"
+          ],
+          "Resource": [
+            {
+              "Fn::GetAtt": [
+                "XTable",
+                "Arn"
+              ]
+            }
+          ]
+        }
+      ],
+      "environment": {
+        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+        "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+        "STAGE": "dev",
+        "DB_TABLE": "polygon-api-dev",
+        "NETWORK": "maticmum",
+        "TEST_NETWORK": "maticmum",
+        "WALLET": "prod/wallet",
+        "ALCHEMY_KEY": "dev/alchemy",
+        "TEST_ALCHEMY_KEY": "dev/alchemy",
+        "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+        "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+        "PRIVATE_KEY": "prod/wallet"
+      },
+      "stage": "dev",
+      "region": "us-east-1",
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "CreateOrgLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/polygon-api-dev-createOrg"
+            }
+          },
+          "GetOrgLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/polygon-api-dev-getOrg"
+            }
+          },
+          "GetWalletLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/polygon-api-dev-getWallet"
+            }
+          },
+          "CreateWalletLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/polygon-api-dev-createWallet"
+            }
+          },
+          "CreateNFTLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/polygon-api-dev-createNFT"
+            }
+          },
+          "GetNFTLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/polygon-api-dev-getNFT"
+            }
+          },
+          "GetAllNFTsLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/polygon-api-dev-getAllNFTs"
+            }
+          },
+          "GetUserNFTsLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/polygon-api-dev-getUserNFTs"
+            }
+          },
+          "ListNFTLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/polygon-api-dev-listNFT"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "polygon-api",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/polygon-api-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/polygon-api-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "polygon-api",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "CreateOrgLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/createOrg.zip"
+              },
+              "Handler": "src/functions/create-org/handler.main",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "polygon-api-dev-createOrg",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "STAGE": "dev",
+                  "DB_TABLE": "polygon-api-dev",
+                  "NETWORK": "maticmum",
+                  "TEST_NETWORK": "maticmum",
+                  "WALLET": "prod/wallet",
+                  "ALCHEMY_KEY": "dev/alchemy",
+                  "TEST_ALCHEMY_KEY": "dev/alchemy",
+                  "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+                  "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+                  "PRIVATE_KEY": "prod/wallet"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CreateOrgLogGroup"
+            ]
+          },
+          "GetOrgLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/getOrg.zip"
+              },
+              "Handler": "src/functions/get-org/handler.main",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "polygon-api-dev-getOrg",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "STAGE": "dev",
+                  "DB_TABLE": "polygon-api-dev",
+                  "NETWORK": "maticmum",
+                  "TEST_NETWORK": "maticmum",
+                  "WALLET": "prod/wallet",
+                  "ALCHEMY_KEY": "dev/alchemy",
+                  "TEST_ALCHEMY_KEY": "dev/alchemy",
+                  "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+                  "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+                  "PRIVATE_KEY": "prod/wallet"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetOrgLogGroup"
+            ]
+          },
+          "GetWalletLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/getWallet.zip"
+              },
+              "Handler": "src/functions/get-wallet/handler.main",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "polygon-api-dev-getWallet",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "STAGE": "dev",
+                  "DB_TABLE": "polygon-api-dev",
+                  "NETWORK": "maticmum",
+                  "TEST_NETWORK": "maticmum",
+                  "WALLET": "prod/wallet",
+                  "ALCHEMY_KEY": "dev/alchemy",
+                  "TEST_ALCHEMY_KEY": "dev/alchemy",
+                  "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+                  "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+                  "PRIVATE_KEY": "prod/wallet"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetWalletLogGroup"
+            ]
+          },
+          "CreateWalletLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/createWallet.zip"
+              },
+              "Handler": "src/functions/create-wallet/handler.main",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "polygon-api-dev-createWallet",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "STAGE": "dev",
+                  "DB_TABLE": "polygon-api-dev",
+                  "NETWORK": "maticmum",
+                  "TEST_NETWORK": "maticmum",
+                  "WALLET": "prod/wallet",
+                  "ALCHEMY_KEY": "dev/alchemy",
+                  "TEST_ALCHEMY_KEY": "dev/alchemy",
+                  "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+                  "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+                  "PRIVATE_KEY": "prod/wallet"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CreateWalletLogGroup"
+            ]
+          },
+          "CreateNFTLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/createNFT.zip"
+              },
+              "Handler": "src/functions/create-nft/handler.main",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "polygon-api-dev-createNFT",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "STAGE": "dev",
+                  "DB_TABLE": "polygon-api-dev",
+                  "NETWORK": "maticmum",
+                  "TEST_NETWORK": "maticmum",
+                  "WALLET": "prod/wallet",
+                  "ALCHEMY_KEY": "dev/alchemy",
+                  "TEST_ALCHEMY_KEY": "dev/alchemy",
+                  "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+                  "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+                  "PRIVATE_KEY": "prod/wallet"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CreateNFTLogGroup"
+            ]
+          },
+          "GetNFTLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/getNFT.zip"
+              },
+              "Handler": "src/functions/get-nft/handler.main",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "polygon-api-dev-getNFT",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "STAGE": "dev",
+                  "DB_TABLE": "polygon-api-dev",
+                  "NETWORK": "maticmum",
+                  "TEST_NETWORK": "maticmum",
+                  "WALLET": "prod/wallet",
+                  "ALCHEMY_KEY": "dev/alchemy",
+                  "TEST_ALCHEMY_KEY": "dev/alchemy",
+                  "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+                  "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+                  "PRIVATE_KEY": "prod/wallet"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetNFTLogGroup"
+            ]
+          },
+          "GetAllNFTsLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/getAllNFTs.zip"
+              },
+              "Handler": "src/functions/get-all-nfts/handler.main",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "polygon-api-dev-getAllNFTs",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "STAGE": "dev",
+                  "DB_TABLE": "polygon-api-dev",
+                  "NETWORK": "maticmum",
+                  "TEST_NETWORK": "maticmum",
+                  "WALLET": "prod/wallet",
+                  "ALCHEMY_KEY": "dev/alchemy",
+                  "TEST_ALCHEMY_KEY": "dev/alchemy",
+                  "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+                  "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+                  "PRIVATE_KEY": "prod/wallet"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetAllNFTsLogGroup"
+            ]
+          },
+          "GetUserNFTsLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/getUserNFTs.zip"
+              },
+              "Handler": "src/functions/get-user-nfts/handler.main",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "polygon-api-dev-getUserNFTs",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "STAGE": "dev",
+                  "DB_TABLE": "polygon-api-dev",
+                  "NETWORK": "maticmum",
+                  "TEST_NETWORK": "maticmum",
+                  "WALLET": "prod/wallet",
+                  "ALCHEMY_KEY": "dev/alchemy",
+                  "TEST_ALCHEMY_KEY": "dev/alchemy",
+                  "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+                  "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+                  "PRIVATE_KEY": "prod/wallet"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetUserNFTsLogGroup"
+            ]
+          },
+          "ListNFTLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/listNFT.zip"
+              },
+              "Handler": "src/functions/list-nft/handler.main",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "polygon-api-dev-listNFT",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "STAGE": "dev",
+                  "DB_TABLE": "polygon-api-dev",
+                  "NETWORK": "maticmum",
+                  "TEST_NETWORK": "maticmum",
+                  "WALLET": "prod/wallet",
+                  "ALCHEMY_KEY": "dev/alchemy",
+                  "TEST_ALCHEMY_KEY": "dev/alchemy",
+                  "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+                  "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+                  "PRIVATE_KEY": "prod/wallet"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "ListNFTLogGroup"
+            ]
+          },
+          "GetOrgLambdaVersionVLjr4tiz2Bdv1pDzAgRmcaHIJcRLdFvWpIJOd6I75nk": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetOrgLambdaFunction"
+              },
+              "CodeSha256": "fRoemFRO8E07ssUkClsFCEaFKBu9Js3mlPYBB5tcohg="
+            }
+          },
+          "GetWalletLambdaVersionOAZGYty8PvclT0VFnCqqDitzl9W4SaRXDq4yeBu6CU": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetWalletLambdaFunction"
+              },
+              "CodeSha256": "CVxEkHk28qTvFl1sBGbjTgp1lBWutCZLfFUuQ+wDLi4="
+            }
+          },
+          "GetAllNFTsLambdaVersionqRIFobnszOnqNZOrskUtKeAeoSUu6NS6WIa4SXsU": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetAllNFTsLambdaFunction"
+              },
+              "CodeSha256": "qqZqKCOJKgnmeRZ9dGWxqV5dc0MZB2uy6S/B02cH63I="
+            }
+          },
+          "GetUserNFTsLambdaVersionCMtnesqrwHMHDiHY18aRYBeNkT6JGa1hcAgkCglR7Y": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetUserNFTsLambdaFunction"
+              },
+              "CodeSha256": "Vu9wzFN1fEL5JS66Q+NA3Quh0mMYf7EMZFNHUlw788Q="
+            }
+          },
+          "GetNFTLambdaVersionTNHelF6WSAhjJ2cI8Ln04Ot4mw5xaudhnJPj0uXAx8": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetNFTLambdaFunction"
+              },
+              "CodeSha256": "cv4eLVFCJPsMcysbI/OmadeEhKHVS0XEUwwF8P+74aA="
+            }
+          },
+          "ListNFTLambdaVersion1xv0XVdl3Xp3bzXGuf5vvrTAqjZrugGbS0UJ9bmiko": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ListNFTLambdaFunction"
+              },
+              "CodeSha256": "/sE8Egu8+46uaYCVez/eaI5v1gcbB1heLCUakFsFVU4="
+            }
+          },
+          "CreateWalletLambdaVersionzylQmnw68btqlLjUb2SifGgoFyhY5kKidkLHPCxSQ": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CreateWalletLambdaFunction"
+              },
+              "CodeSha256": "UM3NokJOESujW+HriqX9LjezJ5bnihSOjD+9wv+AH9g="
+            }
+          },
+          "CreateOrgLambdaVersionFuX1QaVjZUNNvoQsUYV0JSWetwNNSN8blZoKwfbGlI": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CreateOrgLambdaFunction"
+              },
+              "CodeSha256": "VkYSKh5gP2OWxJ/aWKSloRSO/vYrELLo5Tx2Vo1jsOc="
+            }
+          },
+          "CreateNFTLambdaVersionrnjoLnAnamyk8WyyMT1F6mw2tqguvYmuqkJTDVPGM": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CreateNFTLambdaFunction"
+              },
+              "CodeSha256": "AjatTh5ZO7hF+1JrPwLlH5zc4QCD5g099+NAb8qc0n4="
+            }
+          },
+          "ApiGatewayRestApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+              "Name": "polygon-api-dev",
+              "EndpointConfiguration": {
+                "Types": [
+                  "EDGE"
+                ]
+              },
+              "Policy": "",
+              "MinimumCompressionSize": 1024
+            }
+          },
+          "ApiGatewayResourceCreateorg": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "createOrg",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetorg": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "getOrg",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetwallet": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "getWallet",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceCreatewallet": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "createWallet",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceCreatenft": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "createNFT",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetnft": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "getNFT",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetallnfts": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "getAllNFTs",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetusernfts": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "getUserNFTs",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceListnft": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "listNFT",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodCreateorgOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCreateorg"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodGetorgOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetorg"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodGetwalletOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetwallet"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodCreatewalletOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCreatewallet"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodCreatenftOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCreatenft"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodGetnftOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetnft"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodGetallnftsOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetallnfts"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodGetusernftsOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetusernfts"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodListnftOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceListnft"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodCreateorgPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCreateorg"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": true,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "CreateOrgLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": [],
+              "RequestValidatorId": {
+                "Ref": "ApiGatewayPolygonapiRequestValidator"
+              },
+              "RequestModels": {
+                "application/json": {
+                  "Ref": "ApiGatewayMethodCreateorgPostApplicationJsonModel"
+                }
+              }
+            },
+            "DependsOn": [
+              "CreateOrgLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodGetorgGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetorg"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": true,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetOrgLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "GetOrgLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodGetwalletGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetwallet"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": true,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetWalletLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "GetWalletLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodCreatewalletPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCreatewallet"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": true,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "CreateWalletLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "CreateWalletLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodCreatenftPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCreatenft"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": true,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "CreateNFTLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "CreateNFTLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodGetnftGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetnft"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": true,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetNFTLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "GetNFTLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodGetallnftsGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetallnfts"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": true,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetAllNFTsLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "GetAllNFTsLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodGetusernftsGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetusernfts"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": true,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetUserNFTsLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "GetUserNFTsLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodListnftPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceListnft"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": true,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "ListNFTLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "ListNFTLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayPolygonapiRequestValidator": {
+            "Type": "AWS::ApiGateway::RequestValidator",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ValidateRequestBody": true,
+              "ValidateRequestParameters": true,
+              "Name": "polygon-api-dev | Validate request body and querystring parameters"
+            }
+          },
+          "ApiGatewayMethodCreateorgPostApplicationJsonModel": {
+            "Type": "AWS::ApiGateway::Model",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ContentType": "application/json",
+              "Schema": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "tier": {
+                        "type": "string"
+                      },
+                      "apiKey": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "nftName": {
+                        "type": "string"
+                      },
+                      "nftSymbol": {
+                        "type": "string"
+                      },
+                      "orgRoyaltyPercentage": {
+                        "type": "number",
+                        "multipleOf": 0.01
+                      },
+                      "creatorRoyaltyAmount": {
+                        "type": "number",
+                        "multipleOf": 0.01
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "tier",
+                      "apiKey",
+                      "email",
+                      "nftName",
+                      "nftSymbol"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "ApiGatewayDeployment1648949491409": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "StageName": "dev"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodCreateorgOptions",
+              "ApiGatewayMethodGetorgOptions",
+              "ApiGatewayMethodGetwalletOptions",
+              "ApiGatewayMethodCreatewalletOptions",
+              "ApiGatewayMethodCreatenftOptions",
+              "ApiGatewayMethodGetnftOptions",
+              "ApiGatewayMethodGetallnftsOptions",
+              "ApiGatewayMethodGetusernftsOptions",
+              "ApiGatewayMethodListnftOptions",
+              "ApiGatewayMethodCreateorgPost",
+              "ApiGatewayMethodGetorgGet",
+              "ApiGatewayMethodGetwalletGet",
+              "ApiGatewayMethodCreatewalletPost",
+              "ApiGatewayMethodCreatenftPost",
+              "ApiGatewayMethodGetnftGet",
+              "ApiGatewayMethodGetallnftsGet",
+              "ApiGatewayMethodGetusernftsGet",
+              "ApiGatewayMethodListnftPost"
+            ]
+          },
+          "CreateOrgLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CreateOrgLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetOrgLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetOrgLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetWalletLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetWalletLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "CreateWalletLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CreateWalletLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "CreateNFTLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CreateNFTLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetNFTLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetNFTLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetAllNFTsLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetAllNFTsLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetUserNFTsLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetUserNFTsLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "ListNFTLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "ListNFTLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "XTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "TableName": "polygon-api-dev",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "PK",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "SK",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "PK",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "SK",
+                  "KeyType": "RANGE"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "GetOrgLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetOrgLambdaVersionVLjr4tiz2Bdv1pDzAgRmcaHIJcRLdFvWpIJOd6I75nk"
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-GetOrgLambdaFunctionQualifiedArn"
+            }
+          },
+          "GetWalletLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetWalletLambdaVersionOAZGYty8PvclT0VFnCqqDitzl9W4SaRXDq4yeBu6CU"
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-GetWalletLambdaFunctionQualifiedArn"
+            }
+          },
+          "GetAllNFTsLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetAllNFTsLambdaVersionqRIFobnszOnqNZOrskUtKeAeoSUu6NS6WIa4SXsU"
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-GetAllNFTsLambdaFunctionQualifiedArn"
+            }
+          },
+          "GetUserNFTsLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetUserNFTsLambdaVersionCMtnesqrwHMHDiHY18aRYBeNkT6JGa1hcAgkCglR7Y"
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-GetUserNFTsLambdaFunctionQualifiedArn"
+            }
+          },
+          "GetNFTLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetNFTLambdaVersionTNHelF6WSAhjJ2cI8Ln04Ot4mw5xaudhnJPj0uXAx8"
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-GetNFTLambdaFunctionQualifiedArn"
+            }
+          },
+          "ListNFTLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ListNFTLambdaVersion1xv0XVdl3Xp3bzXGuf5vvrTAqjZrugGbS0UJ9bmiko"
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-ListNFTLambdaFunctionQualifiedArn"
+            }
+          },
+          "CreateWalletLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CreateWalletLambdaVersionzylQmnw68btqlLjUb2SifGgoFyhY5kKidkLHPCxSQ"
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-CreateWalletLambdaFunctionQualifiedArn"
+            }
+          },
+          "CreateOrgLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CreateOrgLambdaVersionFuX1QaVjZUNNvoQsUYV0JSWetwNNSN8blZoKwfbGlI"
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-CreateOrgLambdaFunctionQualifiedArn"
+            }
+          },
+          "CreateNFTLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CreateNFTLambdaVersionrnjoLnAnamyk8WyyMT1F6mw2tqguvYmuqkJTDVPGM"
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-CreateNFTLambdaFunctionQualifiedArn"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "ApiGatewayRestApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/dev"
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-polygon-api-dev-ServiceEndpoint"
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "custom": {
+      "stage": "dev",
+      "db_table": "polygon-api-dev",
+      "table_throughputs": {
+        "prod": 5,
+        "default": 1
+      },
+      "table_throughput": 1,
+      "environment": {
+        "NETWORK": {
+          "dev": "maticmum",
+          "prod": "mainnet"
+        },
+        "TEST_NETWORK": "maticmum",
+        "WALLET": {
+          "dev": "prod/wallet",
+          "prod": "prod/wallet"
+        },
+        "ALCHEMY_KEY": {
+          "dev": "dev/alchemy",
+          "prod": "prod/alchemy"
+        },
+        "TEST_ALCHEMY_KEY": "dev/alchemy",
+        "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+        "OPENSEA_URL": {
+          "dev": "https://testnets.opensea.io/assets/mumbai",
+          "prod": "https://opensea.io/assets/matic"
+        }
+      },
+      "dynamodb": {
+        "stages": [
+          "dev"
+        ],
+        "start": {
+          "port": 8008,
+          "inMemory": true,
+          "heapInitial": "200m",
+          "heapMax": "1g",
+          "migrate": true,
+          "seed": true,
+          "convertEmptyValues": true
+        }
+      },
+      "serverless-offline": {
+        "httpPort": 3000,
+        "babelOptions": {
+          "presets": [
+            "env"
+          ]
+        }
+      },
+      "esbuild": {
+        "bundle": true,
+        "minify": false,
+        "sourcemap": true,
+        "exclude": [
+          "aws-sdk"
+        ],
+        "target": "node14",
+        "define": {},
+        "platform": "node",
+        "concurrency": 10,
+        "external": [
+          "electron"
+        ]
+      }
+    },
+    "plugins": [
+      "serverless-esbuild",
+      "serverless-offline",
+      "serverless-dotenv-plugin",
+      "serverless-dynamodb-local"
+    ],
+    "pluginsData": {},
+    "functions": {
+      "createOrg": {
+        "handler": "src/functions/create-org/handler.main",
+        "events": [
+          {
+            "http": {
+              "method": "post",
+              "path": "createOrg",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "POST"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "private": true,
+              "request": {
+                "schemas": {
+                  "application/json": {
+                    "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiGatewayMethodCreateorgPostApplicationJsonModel\"][\"Properties\"][\"Schema\"]"
+                  }
+                }
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "polygon-api-dev-createOrg",
+        "package": {
+          "artifact": "/Users/zoeschmitt/Projects/polygon-api/.serverless/createOrg.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "CreateOrgLambdaVersionFuX1QaVjZUNNvoQsUYV0JSWetwNNSN8blZoKwfbGlI"
+      },
+      "getOrg": {
+        "handler": "src/functions/get-org/handler.main",
+        "events": [
+          {
+            "http": {
+              "method": "get",
+              "path": "getOrg",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "private": true,
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "polygon-api-dev-getOrg",
+        "package": {
+          "artifact": "/Users/zoeschmitt/Projects/polygon-api/.serverless/getOrg.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "GetOrgLambdaVersionVLjr4tiz2Bdv1pDzAgRmcaHIJcRLdFvWpIJOd6I75nk"
+      },
+      "getWallet": {
+        "handler": "src/functions/get-wallet/handler.main",
+        "events": [
+          {
+            "http": {
+              "method": "get",
+              "path": "getWallet",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "private": true,
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "polygon-api-dev-getWallet",
+        "package": {
+          "artifact": "/Users/zoeschmitt/Projects/polygon-api/.serverless/getWallet.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "GetWalletLambdaVersionOAZGYty8PvclT0VFnCqqDitzl9W4SaRXDq4yeBu6CU"
+      },
+      "createWallet": {
+        "handler": "src/functions/create-wallet/handler.main",
+        "events": [
+          {
+            "http": {
+              "method": "post",
+              "path": "createWallet",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "POST"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "private": true,
+              "request": {
+                "schemas": {}
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "polygon-api-dev-createWallet",
+        "package": {
+          "artifact": "/Users/zoeschmitt/Projects/polygon-api/.serverless/createWallet.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "CreateWalletLambdaVersionzylQmnw68btqlLjUb2SifGgoFyhY5kKidkLHPCxSQ"
+      },
+      "createNFT": {
+        "handler": "src/functions/create-nft/handler.main",
+        "events": [
+          {
+            "http": {
+              "method": "post",
+              "path": "createNFT",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "POST"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "private": true,
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "polygon-api-dev-createNFT",
+        "package": {
+          "artifact": "/Users/zoeschmitt/Projects/polygon-api/.serverless/createNFT.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "CreateNFTLambdaVersionrnjoLnAnamyk8WyyMT1F6mw2tqguvYmuqkJTDVPGM"
+      },
+      "getNFT": {
+        "handler": "src/functions/get-nft/handler.main",
+        "events": [
+          {
+            "http": {
+              "method": "get",
+              "path": "getNFT",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "private": true,
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "polygon-api-dev-getNFT",
+        "package": {
+          "artifact": "/Users/zoeschmitt/Projects/polygon-api/.serverless/getNFT.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "GetNFTLambdaVersionTNHelF6WSAhjJ2cI8Ln04Ot4mw5xaudhnJPj0uXAx8"
+      },
+      "getAllNFTs": {
+        "handler": "src/functions/get-all-nfts/handler.main",
+        "events": [
+          {
+            "http": {
+              "method": "get",
+              "path": "getAllNFTs",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "private": true,
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "polygon-api-dev-getAllNFTs",
+        "package": {
+          "artifact": "/Users/zoeschmitt/Projects/polygon-api/.serverless/getAllNFTs.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "GetAllNFTsLambdaVersionqRIFobnszOnqNZOrskUtKeAeoSUu6NS6WIa4SXsU"
+      },
+      "getUserNFTs": {
+        "handler": "src/functions/get-user-nfts/handler.main",
+        "events": [
+          {
+            "http": {
+              "method": "get",
+              "path": "getUserNFTs",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "private": true,
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "polygon-api-dev-getUserNFTs",
+        "package": {
+          "artifact": "/Users/zoeschmitt/Projects/polygon-api/.serverless/getUserNFTs.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "GetUserNFTsLambdaVersionCMtnesqrwHMHDiHY18aRYBeNkT6JGa1hcAgkCglR7Y"
+      },
+      "listNFT": {
+        "handler": "src/functions/list-nft/handler.main",
+        "events": [
+          {
+            "http": {
+              "method": "post",
+              "path": "listNFT",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "POST"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "private": true,
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "polygon-api-dev-listNFT",
+        "package": {
+          "artifact": "/Users/zoeschmitt/Projects/polygon-api/.serverless/listNFT.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "ListNFTLambdaVersion1xv0XVdl3Xp3bzXGuf5vvrTAqjZrugGbS0UJ9bmiko"
+      }
+    },
+    "resources": {
+      "Resources": {
+        "XTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "TableName": "polygon-api-dev",
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "PK",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "SK",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "PK",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "SK",
+                "KeyType": "RANGE"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 1,
+              "WriteCapacityUnits": 1
+            }
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless.ts",
+    "initialServerlessConfig": {
+      "service": {
+        "$ref": "$[\"service\"][\"serviceObject\"]"
+      },
+      "frameworkVersion": "2",
+      "plugins": {
+        "$ref": "$[\"service\"][\"plugins\"]"
+      },
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      },
+      "package": {
+        "individually": true
+      },
+      "custom": {
+        "$ref": "$[\"service\"][\"custom\"]"
+      },
+      "resources": {
+        "$ref": "$[\"service\"][\"resources\"]"
+      }
+    },
+    "layers": {},
+    "isDashboardMonitoringPreconfigured": false
+  },
+  "package": {
+    "individually": true,
+    "artifactDirectoryName": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z",
+    "artifact": ""
+  }
+}
