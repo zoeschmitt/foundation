@@ -21,7 +21,6 @@ import jsonSchemaError from "src/middleware/json-schema-error";
 import { getSecret } from "src/utils/get-secret";
 import { Royalties } from "src/types/royalties.type";
 import { AlchemyProvider } from "@ethersproject/providers";
-import { parseAlchemyApiKey } from "src/utils/parse-alchemy-api-key";
 import deployNFTContract from "../../../scripts/deploy-nft-contract";
 
 export const createOrg: APIGatewayProxyHandler = async (
@@ -69,7 +68,7 @@ export const createOrg: APIGatewayProxyHandler = async (
     const contractRequest = {
       provider: new AlchemyProvider(
         network, // mumbai
-        await parseAlchemyApiKey(alchemyApiKey["key"])
+        alchemyApiKey["key"]
       ),
       name: org.nftName,
       symbol: org.nftSymbol,
@@ -129,17 +128,6 @@ export const createOrg: APIGatewayProxyHandler = async (
     // ADD ENTRIES TO DYNAMO -----------------------------------
     await dynamoService.put(orgKeyData);
     await dynamoService.put(orgIdData);
-
-    // ORG NFT COUNTER -----------------------------------
-    const counterQuery = {
-      TableName: DB_TABLE,
-      Item: {
-        PK: `ORG#${orgId}#COUNTER`,
-        SK: `COUNTER#${orgId}`,
-      },
-    };
-    counterQuery.Item[network] = 0;
-    await dynamoService.put(counterQuery);
 
     /// RETURN RESPONSE -----------------------------------
 

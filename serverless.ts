@@ -5,6 +5,7 @@ import createOrg from "@functions/create-org";
 import getOrg from "@functions/get-org";
 import getWallet from "@functions/get-wallet";
 import createWallet from "@functions/create-wallet";
+import createNFT from "@functions/create-nft";
 
 const serverlessConfiguration: AWS = {
   service: "polygon-api",
@@ -50,10 +51,12 @@ const serverlessConfiguration: AWS = {
         "${self:custom.environment.ALCHEMY_KEY.${self:custom.stage}}",
       TEST_ALCHEMY_KEY: "${self:custom.environment.TEST_ALCHEMY_KEY}",
       NFT_STORAGE_API_KEY: "${self:custom.environment.NFT_STORAGE_API_KEY}",
+      OPENSEA_URL:
+        "${self:custom.environment.OPENSEA_URL.${self:custom.stage}}",
     },
   },
   // import the function via paths
-  functions: { createOrg, getOrg, getWallet, createWallet },
+  functions: { createOrg, getOrg, getWallet, createWallet, createNFT },
   package: { individually: true },
   custom: {
     stage: "${opt:stage, self:provider.stage}",
@@ -77,6 +80,10 @@ const serverlessConfiguration: AWS = {
       },
       TEST_ALCHEMY_KEY: "dev/alchemy",
       NFT_STORAGE_API_KEY: "prod/nftStorageApiKey",
+      OPENSEA_URL: {
+        dev: "https://testnets.opensea.io/assets/mumbai",
+        prod: "https://opensea.io/assets/matic",
+      },
     },
     dynamodb: {
       stages: ["dev"],
@@ -107,6 +114,7 @@ const serverlessConfiguration: AWS = {
       define: { "require.resolve": undefined },
       platform: "node",
       concurrency: 10,
+      external: ["electron"],
     },
   },
   resources: {
