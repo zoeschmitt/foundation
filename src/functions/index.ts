@@ -7,3 +7,4 @@ export { default as getNFT } from './get-nft';
 export { default as getAllNFTs } from './get-all-nfts';
 export { default as getUserNFTs } from './get-user-nfts';
 export { default as listNFT } from './list-nft';
+export { default as getOrgWallet } from './get-org-wallet';

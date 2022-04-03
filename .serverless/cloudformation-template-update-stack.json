@@ -125,6 +125,12 @@
         "LogGroupName": "/aws/lambda/polygon-api-dev-listNFT"
       }
     },
+    "GetOrgWalletLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/polygon-api-dev-getOrgWallet"
+      }
+    },
     "IamRoleLambdaExecution": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -229,7 +235,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/createOrg.zip"
+          "S3Key": "serverless/polygon-api/dev/1648951364214-2022-04-03T02:02:44.214Z/createOrg.zip"
         },
         "Handler": "src/functions/create-org/handler.main",
         "Runtime": "nodejs14.x",
@@ -270,7 +276,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/getOrg.zip"
+          "S3Key": "serverless/polygon-api/dev/1648951364214-2022-04-03T02:02:44.214Z/getOrg.zip"
         },
         "Handler": "src/functions/get-org/handler.main",
         "Runtime": "nodejs14.x",
@@ -311,7 +317,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/getWallet.zip"
+          "S3Key": "serverless/polygon-api/dev/1648951364214-2022-04-03T02:02:44.214Z/getWallet.zip"
         },
         "Handler": "src/functions/get-wallet/handler.main",
         "Runtime": "nodejs14.x",
@@ -352,7 +358,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/createWallet.zip"
+          "S3Key": "serverless/polygon-api/dev/1648951364214-2022-04-03T02:02:44.214Z/createWallet.zip"
         },
         "Handler": "src/functions/create-wallet/handler.main",
         "Runtime": "nodejs14.x",
@@ -393,7 +399,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/createNFT.zip"
+          "S3Key": "serverless/polygon-api/dev/1648951364214-2022-04-03T02:02:44.214Z/createNFT.zip"
         },
         "Handler": "src/functions/create-nft/handler.main",
         "Runtime": "nodejs14.x",
@@ -434,7 +440,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/getNFT.zip"
+          "S3Key": "serverless/polygon-api/dev/1648951364214-2022-04-03T02:02:44.214Z/getNFT.zip"
         },
         "Handler": "src/functions/get-nft/handler.main",
         "Runtime": "nodejs14.x",
@@ -475,7 +481,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/getAllNFTs.zip"
+          "S3Key": "serverless/polygon-api/dev/1648951364214-2022-04-03T02:02:44.214Z/getAllNFTs.zip"
         },
         "Handler": "src/functions/get-all-nfts/handler.main",
         "Runtime": "nodejs14.x",
@@ -516,7 +522,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/getUserNFTs.zip"
+          "S3Key": "serverless/polygon-api/dev/1648951364214-2022-04-03T02:02:44.214Z/getUserNFTs.zip"
         },
         "Handler": "src/functions/get-user-nfts/handler.main",
         "Runtime": "nodejs14.x",
@@ -557,7 +563,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/polygon-api/dev/1648949493689-2022-04-03T01:31:33.689Z/listNFT.zip"
+          "S3Key": "serverless/polygon-api/dev/1648951364214-2022-04-03T02:02:44.214Z/listNFT.zip"
         },
         "Handler": "src/functions/list-nft/handler.main",
         "Runtime": "nodejs14.x",
@@ -591,6 +597,47 @@
         "ListNFTLogGroup"
       ]
     },
+    "GetOrgWalletLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/polygon-api/dev/1648951364214-2022-04-03T02:02:44.214Z/getOrgWallet.zip"
+        },
+        "Handler": "src/functions/get-org-wallet/handler.main",
+        "Runtime": "nodejs14.x",
+        "FunctionName": "polygon-api-dev-getOrgWallet",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "STAGE": "dev",
+            "DB_TABLE": "polygon-api-dev",
+            "NETWORK": "maticmum",
+            "TEST_NETWORK": "maticmum",
+            "WALLET": "prod/wallet",
+            "ALCHEMY_KEY": "dev/alchemy",
+            "TEST_ALCHEMY_KEY": "dev/alchemy",
+            "NFT_STORAGE_API_KEY": "prod/nftStorageApiKey",
+            "OPENSEA_URL": "https://testnets.opensea.io/assets/mumbai",
+            "PRIVATE_KEY": "prod/wallet"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "GetOrgWalletLogGroup"
+      ]
+    },
     "GetOrgLambdaVersionVLjr4tiz2Bdv1pDzAgRmcaHIJcRLdFvWpIJOd6I75nk": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
@@ -609,6 +656,16 @@
           "Ref": "GetWalletLambdaFunction"
         },
         "CodeSha256": "CVxEkHk28qTvFl1sBGbjTgp1lBWutCZLfFUuQ+wDLi4="
+      }
+    },
+    "GetNFTLambdaVersionTNHelF6WSAhjJ2cI8Ln04Ot4mw5xaudhnJPj0uXAx8": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetNFTLambdaFunction"
+        },
+        "CodeSha256": "cv4eLVFCJPsMcysbI/OmadeEhKHVS0XEUwwF8P+74aA="
       }
     },
     "GetAllNFTsLambdaVersionqRIFobnszOnqNZOrskUtKeAeoSUu6NS6WIa4SXsU": {
@@ -631,14 +688,14 @@
         "CodeSha256": "Vu9wzFN1fEL5JS66Q+NA3Quh0mMYf7EMZFNHUlw788Q="
       }
     },
-    "GetNFTLambdaVersionTNHelF6WSAhjJ2cI8Ln04Ot4mw5xaudhnJPj0uXAx8": {
+    "GetOrgWalletLambdaVersiontXxA6G7t5UaZaFqDQFYhdr4270PFdg6nKftFwOuK3o": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "GetNFTLambdaFunction"
+          "Ref": "GetOrgWalletLambdaFunction"
         },
-        "CodeSha256": "cv4eLVFCJPsMcysbI/OmadeEhKHVS0XEUwwF8P+74aA="
+        "CodeSha256": "AUDsibfGYN6ia+dxHaZAFKOGBQobrZ33lTjc5UuW6Q0="
       }
     },
     "ListNFTLambdaVersion1xv0XVdl3Xp3bzXGuf5vvrTAqjZrugGbS0UJ9bmiko": {
@@ -824,6 +881,21 @@
           ]
         },
         "PathPart": "listNFT",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceGetorgwallet": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "getOrgWallet",
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -1228,6 +1300,51 @@
         },
         "ResourceId": {
           "Ref": "ApiGatewayResourceListnft"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodGetorgwalletOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceGetorgwallet"
         },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
@@ -1656,6 +1773,52 @@
         "ListNFTLambdaPermissionApiGateway"
       ]
     },
+    "ApiGatewayMethodGetorgwalletGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceGetorgwallet"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": true,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "GetOrgWalletLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "GetOrgWalletLambdaPermissionApiGateway"
+      ]
+    },
     "ApiGatewayPolygonapiRequestValidator": {
       "Type": "AWS::ApiGateway::RequestValidator",
       "Properties": {
@@ -1720,7 +1883,7 @@
         }
       }
     },
-    "ApiGatewayDeployment1648949491409": {
+    "ApiGatewayDeployment1648951361938": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -1738,6 +1901,7 @@
         "ApiGatewayMethodGetallnftsOptions",
         "ApiGatewayMethodGetusernftsOptions",
         "ApiGatewayMethodListnftOptions",
+        "ApiGatewayMethodGetorgwalletOptions",
         "ApiGatewayMethodCreateorgPost",
         "ApiGatewayMethodGetorgGet",
         "ApiGatewayMethodGetwalletGet",
@@ -1746,7 +1910,8 @@
         "ApiGatewayMethodGetnftGet",
         "ApiGatewayMethodGetallnftsGet",
         "ApiGatewayMethodGetusernftsGet",
-        "ApiGatewayMethodListnftPost"
+        "ApiGatewayMethodListnftPost",
+        "ApiGatewayMethodGetorgwalletGet"
       ]
     },
     "CreateOrgLambdaPermissionApiGateway": {
@@ -2082,6 +2247,43 @@
         }
       }
     },
+    "GetOrgWalletLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GetOrgWalletLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
     "XTable": {
       "Type": "AWS::DynamoDB::Table",
       "DeletionPolicy": "Retain",
@@ -2141,6 +2343,15 @@
         "Name": "sls-polygon-api-dev-GetWalletLambdaFunctionQualifiedArn"
       }
     },
+    "GetNFTLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GetNFTLambdaVersionTNHelF6WSAhjJ2cI8Ln04Ot4mw5xaudhnJPj0uXAx8"
+      },
+      "Export": {
+        "Name": "sls-polygon-api-dev-GetNFTLambdaFunctionQualifiedArn"
+      }
+    },
     "GetAllNFTsLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
@@ -2159,13 +2370,13 @@
         "Name": "sls-polygon-api-dev-GetUserNFTsLambdaFunctionQualifiedArn"
       }
     },
-    "GetNFTLambdaFunctionQualifiedArn": {
+    "GetOrgWalletLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetNFTLambdaVersionTNHelF6WSAhjJ2cI8Ln04Ot4mw5xaudhnJPj0uXAx8"
+        "Ref": "GetOrgWalletLambdaVersiontXxA6G7t5UaZaFqDQFYhdr4270PFdg6nKftFwOuK3o"
       },
       "Export": {
-        "Name": "sls-polygon-api-dev-GetNFTLambdaFunctionQualifiedArn"
+        "Name": "sls-polygon-api-dev-GetOrgWalletLambdaFunctionQualifiedArn"
       }
     },
     "ListNFTLambdaFunctionQualifiedArn": {
