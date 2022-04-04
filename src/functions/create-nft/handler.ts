@@ -136,8 +136,7 @@ export const createNFT: APIGatewayProxyHandler = async (
 
     console.log(nftStorageResponse);
 
-    const tokenURI =
-      "https://ipfs.io/ipfs/" + nftStorageResponse.ipnft + "/metadata.json";
+    const tokenURI = ipfsLink + nftStorageResponse.ipnft + "/metadata.json";
     metadata.nft = tokenURI;
 
     try {

@@ -28,6 +28,9 @@ export const listNFT: APIGatewayProxyHandler = async (
   const dynamoService = new DynamoService();
 
   try {
+
+    /// VERIFY REQUEST PARAMS -----------------------------------
+
     if (!event.queryStringParameters || !event.queryStringParameters.nftId)
       return handlerResponse(StatusCode.NOT_FOUND, {
         message: "nftId not found in path.",
@@ -43,11 +46,15 @@ export const listNFT: APIGatewayProxyHandler = async (
       });
     }
 
+    /// FETCH ORG -----------------------------------
+
     const org: Org = (await getOrgWithApiKey(event["headers"])) as Org;
     if (org === null)
       return handlerResponse(StatusCode.ERROR, {
         message: "Error authenticating API key, our team has been notiifed.",
       });
+
+    /// FETCH NFT -----------------------------------
 
     const params = {
       TableName: DB_TABLE,
@@ -63,6 +70,8 @@ export const listNFT: APIGatewayProxyHandler = async (
       return handlerResponse(StatusCode.NOT_FOUND, {
         message: `Failed to find nft with nftId ${nftId}.`,
       });
+
+    /// UPDATE NFT -----------------------------------
 
     const updatedNFT = await NFTUtils.updateNFTListing({
       table: DB_TABLE,
