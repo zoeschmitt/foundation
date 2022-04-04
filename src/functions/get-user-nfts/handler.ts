@@ -6,12 +6,12 @@ import {
 } from "aws-lambda";
 import { handlerResponse } from "src/utils/handler-response";
 import { StatusCode } from "src/enums/status-code.enum";
+import { Org } from "src/types/org.type";
 import { getOrgWithApiKey } from "src/utils/org/get-org-with-api-key";
 import DynamoService from "src/services/dynamo.service";
-import { Org } from "src/types/org.type";
-import getWalletWithId from "src/utils/wallet/get-wallet-with-id";
+import NFTUtils from "src/utils/nft/nft-utils";
 
-export const getWallet: APIGatewayProxyHandler = async (
+export const getUserNFTs: APIGatewayProxyHandler = async (
   event: APIGatewayEvent,
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
@@ -32,34 +32,35 @@ export const getWallet: APIGatewayProxyHandler = async (
         message: "Error authenticating API key, our team has been notiifed.",
       });
 
-    const userWallet = await getWalletWithId(
-      org.orgId,
-      walletId,
-      dynamoService,
-      DB_TABLE
-    );
+    const nftQuery = (await dynamoService.query({
+      TableName: DB_TABLE,
+      KeyConditionExpression: "#PK = :PK and begins_with(#SK, :SK)",
+      ExpressionAttributeNames: { "#PK": "PK", "#SK": "SK" },
+      ExpressionAttributeValues: {
+        ":PK": `ORG#${org.orgId}`,
+        ":SK": `WAL#${walletId}`,
+      },
+    })) as any;
 
-    if (!userWallet)
+    console.log(nftQuery);
+
+    if (!nftQuery)
       return handlerResponse(StatusCode.NOT_FOUND, {
-        message: `Failed to find wallet with walletId ${walletId}.`,
+        message:
+          "Failed to find nfts, please check your request or contact support.",
       });
 
-    const walletResponse = {
-      walletId: userWallet.walletId,
-      address: userWallet.wallet.address,
-      privateKey: userWallet.wallet.privateKey,
-      mnemonic: userWallet.wallet.mnemonic.phrase,
-    };
+    const nfts = await NFTUtils.formatNFTList(nftQuery.Items);
 
-    console.log(`getWallet Finished successfully`);
-    return handlerResponse(StatusCode.OK, walletResponse);
+    console.log(`getUserNFTs Finished successfully`);
+    return handlerResponse(StatusCode.OK, nfts);
   } catch (e) {
-    console.log(`getWallet error: ${e.toString()}`);
+    console.log(`getUserNFTs error: ${e.toString()}`);
     return handlerResponse(StatusCode.ERROR, {
       message:
-        "Failed to get wallet, please check your request or contact support.",
+        "Failed to get nfts, please check your request or contact support.",
     });
   }
 };
 
-export const main = getWallet;
+export const main = getUserNFTs;

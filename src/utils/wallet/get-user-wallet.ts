@@ -1,5 +1,5 @@
 import DynamoService from "src/services/dynamo.service";
-import { ZUser } from "src/types/z-user.type";
+import { UserWallet } from "src/types/user-wallet.type";
 
 type Props = {
   table: string;
@@ -21,7 +21,7 @@ const getUserWallet = async (props: Props) => {
   if (res === undefined || res.Item === undefined)
     throw `WalletId ${walletId} not found.`;
 
-  return res.Item as ZUser;
+  return res.Item as UserWallet;
 };
 
 export default getUserWallet;

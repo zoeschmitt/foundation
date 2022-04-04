@@ -1,4 +1,4 @@
-export type ZWallet = {
+export type WalletCryptoData = {
   address: string;
   privateKey: string;
   mnemonic: any;

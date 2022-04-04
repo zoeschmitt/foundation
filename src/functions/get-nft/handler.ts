@@ -8,10 +8,11 @@ import { handlerResponse } from "src/utils/handler-response";
 import { StatusCode } from "src/enums/status-code.enum";
 import { getOrgWithApiKey } from "src/utils/org/get-org-with-api-key";
 import DynamoService from "src/services/dynamo.service";
+import { NFT } from "src/types/nft.type";
 import { Org } from "src/types/org.type";
-import getWalletWithId from "src/utils/wallet/get-wallet-with-id";
+import NFTUtils from "src/utils/nft/nft-utils";
 
-export const getWallet: APIGatewayProxyHandler = async (
+export const getNFT: APIGatewayProxyHandler = async (
   event: APIGatewayEvent,
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
@@ -19,12 +20,12 @@ export const getWallet: APIGatewayProxyHandler = async (
   const dynamoService = new DynamoService();
 
   try {
-    if (!event.queryStringParameters || !event.queryStringParameters.walletId)
+    if (!event.queryStringParameters || !event.queryStringParameters.nftId)
       return handlerResponse(StatusCode.NOT_FOUND, {
-        message: "walletId not found in path.",
+        message: "nftId not found in path.",
       });
 
-    const walletId = event.queryStringParameters.walletId;
+    const nftId = event.queryStringParameters.nftId;
 
     const org: Org = (await getOrgWithApiKey(event["headers"])) as Org;
     if (org === null)
@@ -32,34 +33,33 @@ export const getWallet: APIGatewayProxyHandler = async (
         message: "Error authenticating API key, our team has been notiifed.",
       });
 
-    const userWallet = await getWalletWithId(
-      org.orgId,
-      walletId,
-      dynamoService,
-      DB_TABLE
-    );
-
-    if (!userWallet)
-      return handlerResponse(StatusCode.NOT_FOUND, {
-        message: `Failed to find wallet with walletId ${walletId}.`,
-      });
-
-    const walletResponse = {
-      walletId: userWallet.walletId,
-      address: userWallet.wallet.address,
-      privateKey: userWallet.wallet.privateKey,
-      mnemonic: userWallet.wallet.mnemonic.phrase,
+    const params = {
+      TableName: DB_TABLE,
+      Key: {
+        PK: `ORG#${org.orgId}#NFT#${nftId}`,
+        SK: `ORG#${org.orgId}`,
+      },
     };
 
-    console.log(`getWallet Finished successfully`);
-    return handlerResponse(StatusCode.OK, walletResponse);
+    const nft: NFT = (await dynamoService.get(params)).Item as any;
+
+    if (!nft)
+      return handlerResponse(StatusCode.NOT_FOUND, {
+        message: `Failed to find nft with nftId ${nftId}.`,
+      });
+
+    const nftResponse = await NFTUtils.formatNFT(nft);
+
+    console.log(nftResponse);
+    console.log(`getNFT Finished successfully.`);
+    return handlerResponse(StatusCode.OK, nftResponse);
   } catch (e) {
-    console.log(`getWallet error: ${e.toString()}`);
+    console.log(`getNFT error: ${e.toString()}`);
     return handlerResponse(StatusCode.ERROR, {
       message:
-        "Failed to get wallet, please check your request or contact support.",
+        "Failed to get nft, please check your request or contact support.",
     });
   }
 };
 
-export const main = getWallet;
+export const main = getNFT;
