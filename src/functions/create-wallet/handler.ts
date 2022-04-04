@@ -33,10 +33,9 @@ export const createWallet: APIGatewayProxyHandler = async (
         "Error authenticating API key, our team has been notiifed."
       );
 
-    console.log(`Creating wallet.`);
-    const wallet = await createZWallet();
-
     /// CREATE WALLET OBJECT AND ADD TO DYNAMO -----------------------------------
+
+    const wallet = await createZWallet();
 
     const walletData = {
       TableName: DB_TABLE,
