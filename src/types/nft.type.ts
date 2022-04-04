@@ -4,6 +4,7 @@ export type NFT = {
   nftId: string;
   orgId: string;
   walletId: string;
+  creatorWalletId: string;
   network: string;
   contract: string;
   tokenId: string;

@@ -44,7 +44,7 @@ const updateNFTPostPurchase = async (props: UpdateNFTPostPurchaseProps) => {
   const { table, orgId, nftId, previousOwnerId, newOwnerId, dynamoService } =
     props;
 
-  const counterParams = {
+  const params = {
     TableName: table,
     Key: {},
     UpdateExpression: `set isListed = :isListed, walletId = :walletId`,
@@ -55,8 +55,8 @@ const updateNFTPostPurchase = async (props: UpdateNFTPostPurchaseProps) => {
     ReturnValues: "UPDATED_NEW",
   };
 
-  const multipleQueryUpdate = counterParams;
-  const singleQueryUpdate = counterParams;
+  const multipleQueryUpdate = params;
+  const singleQueryUpdate = params;
 
   singleQueryUpdate.Key = {
     PK: `ORG#${orgId}#NFT#${nftId}`,
@@ -102,7 +102,7 @@ const updateNFTListing = async (props: UpdateNFTListingProps) => {
   const { table, orgId, nftId, walletId, isListed, listPrice, dynamoService } =
     props;
 
-  const counterParams = {
+  const params = {
     TableName: table,
     Key: {},
     UpdateExpression: `set isListed = :isListed, listPrice = :listPrice`,
@@ -113,8 +113,8 @@ const updateNFTListing = async (props: UpdateNFTListingProps) => {
     ReturnValues: "UPDATED_NEW",
   };
 
-  const multipleQueryUpdate = counterParams;
-  const singleQueryUpdate = counterParams;
+  const multipleQueryUpdate = params;
+  const singleQueryUpdate = params;
 
   multipleQueryUpdate.Key = {
     PK: `ORG#${orgId}`,

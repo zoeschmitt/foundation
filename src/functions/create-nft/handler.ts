@@ -12,7 +12,6 @@ import { getOrgWithApiKey } from "src/utils/org/get-org-with-api-key";
 import { Org } from "src/types/org.type";
 import { getSecret } from "src/utils/get-secret";
 import { CreateNFTRequest } from "src/types/requests/create-nft-request.type";
-import { ZUser } from "src/types/z-user.type";
 import { NFT } from "../../../src/types/nft.type";
 import middy from "@middy/core";
 import httpErrorHandler from "@middy/http-error-handler";
@@ -24,12 +23,14 @@ import NFTUtils from "src/utils/nft/nft-utils";
 import getNFTContent from "src/utils/nft/get-nft-content";
 import mintNFT from "src/utils/nft/mint-nft";
 import nftContract from "../../../artifacts/contracts/NFT.sol/NFT.json";
+import getWalletWithId from "src/utils/wallet/get-wallet-with-id";
 
 export const createNFT: APIGatewayProxyHandler = async (
   event: APIGatewayEvent,
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
   console.log(event);
+
   /// REQUEST VALIDATION -----------------------------------
 
   if (!event.queryStringParameters || !event.queryStringParameters.walletId)
@@ -65,24 +66,17 @@ export const createNFT: APIGatewayProxyHandler = async (
         message: "Error authenticating API key, our team has been notiifed.",
       });
 
-    let userData: ZUser;
-    try {
-      const res = await dynamoService.get({
-        TableName: DB_TABLE,
-        Key: {
-          PK: `ORG#${org.orgId}#WAL#${walletId}`,
-          SK: `ORG#${org.orgId}`,
-        },
-      });
-      if (res === undefined || res.Item === undefined)
-        throw `Wallet with ${walletId} not found.`;
-      userData = res.Item as ZUser;
-    } catch (e) {
-      console.log(e);
+    const minterWallet = await getWalletWithId(
+      org.orgId,
+      walletId,
+      dynamoService,
+      DB_TABLE
+    );
+
+    if (!minterWallet)
       return handlerResponse(StatusCode.NOT_FOUND, {
-        message: `Wallet with walletId ${walletId} not found.`,
+        message: `Failed to find wallet with walletId ${walletId}.`,
       });
-    }
 
     /// PIN TO IPFS -----------------------------------
     const nftStorageApiKey = (await getSecret(
@@ -95,7 +89,7 @@ export const createNFT: APIGatewayProxyHandler = async (
       name: metadata.name,
       description: metadata.description,
       image: null,
-      fee_recipient: userData.wallet.address,
+      fee_recipient: minterWallet.wallet.address,
       seller_fee_basis_points: org.creatorRoyaltyPercentage * 100, // 10 * 10 = 1000 == 10% (OpenSea max)
       properties: {
         ...metadata,
@@ -140,7 +134,8 @@ export const createNFT: APIGatewayProxyHandler = async (
 
     console.log(nftStorageResponse);
 
-    const tokenURI = nftStorageResponse.ipnft + "/metadata.json";
+    const tokenURI =
+      "https://ipfs.io/ipfs/" + nftStorageResponse.ipnft + "/metadata.json";
     metadata.nft = tokenURI;
 
     try {
@@ -170,7 +165,7 @@ export const createNFT: APIGatewayProxyHandler = async (
       nftContract,
       alchemyKey: alchemyApiKey.https,
       ourWallet,
-      clientWalletAddress: userData.wallet.address,
+      clientWalletAddress: minterWallet.wallet.address,
       contractAddress: org.contract,
       tokenURI,
       royalty: org.creatorRoyaltyPercentage * 100 ?? 1000,
@@ -183,7 +178,8 @@ export const createNFT: APIGatewayProxyHandler = async (
     const newNFT: NFT = {
       nftId: nftId,
       orgId: org.orgId,
-      walletId: userData.walletId,
+      walletId: minterWallet.walletId,
+      creatorWalletId: minterWallet.walletId,
       network: network,
       contract: org.contract,
       tokenId: tokenId.toString(),
@@ -201,7 +197,7 @@ export const createNFT: APIGatewayProxyHandler = async (
     // royalties
     if (org.creatorRoyaltyPercentage !== undefined)
       newNFT.royalties.push({
-        recipient: userData.wallet.address,
+        recipient: minterWallet.wallet.address,
         percentage: org.creatorRoyaltyPercentage,
       });
 
