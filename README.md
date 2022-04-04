@@ -1,45 +1,44 @@
-# Polygon API
+# Polygon Marketplace API
 
-NFT creation API interfacing with the Polygon PoS blockchain.
+An API allowing anyone to create an [NFT](https://eips.ethereum.org/EIPS/eip-721) (ERC721 Token) marketplace on their platforms with just a few endpoints.
 
-This API:
+Main Features:
 
-- Generates eth/polygon wallets.
-- Mints NFTs.
+- Deploy smart contracts.
+- Generate blockchain wallets.
+- Mint NFTs.
+- List NFTs for sale.
+- Buy NFTs.
 
-You can:
-
-- Query all NFTs, a specific users NFTs, a single NFT.
-- Retrieve your generated wallet private key.
-
------
+---
 
 ## Resources
 
 - [OpenZeppelin](https://openzeppelin.com/contracts/)
 - [Ethers](https://www.npmjs.com/package/ethers)
+- [Web3.js](https://github.com/ChainSafe/web3.js)
 - [Hardhat](https://hardhat.org/)
 - [NFT Storage](https://nft.storage/)
 - [AWS](https://www.npmjs.com/package/aws-sdk)
 
-----
+---
 
 ## Project Structure
 
-    .  
-    ├── ...  
-    ├── contracts               # NFT contracts  
-    ├── resources               # DynamoDB table definition  
-    ├── scripts                 # Blockchain deployment scripts  
-    ├── src  
-    │   ├── ...  
-    │   ├── functions           # AWS lambda functions  
-    │   ├── ...  
-    ├── tests  
-    │   ├── integration         # End-to-end, integration tests  
-    │   └── unit                # Unit tests  
+    .
+    ├── ...
+    ├── contracts               # NFT contracts
+    ├── resources               # DynamoDB table definition
+    ├── scripts                 # Blockchain deployment scripts
+    ├── src
+    │   ├── ...
+    │   ├── functions           # AWS lambda functions
+    │   ├── ...
+    ├── tests
+    │   ├── integration         # End-to-end, integration tests
+    │   └── unit                # Unit tests
 
------ 
+---
 
 ## Contracts
 
@@ -53,7 +52,7 @@ NFT ERC721 smart contract in `contracts/`. Inherits from OpenZeppelins ERC721 co
 
 Currently the deploy function is in `src/scripts/` and uses the binary/abi generated from hardhat compilation in `artifacts/`. Use `npx ts-node scripts/deploy-nft-contract` to deploy a contract and visit the file itself to change the config for testnet/mainnet. In the future this function will be used to automate the process.
 
------
+---
 
 ## Middleware
 

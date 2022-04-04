@@ -27,8 +27,6 @@ export const listNFT: APIGatewayProxyHandler = async (
   const DB_TABLE = process.env.DB_TABLE;
   const dynamoService = new DynamoService();
 
-  // make update query to dynamo to update isListed and listPrice
-
   try {
     if (!event.queryStringParameters || !event.queryStringParameters.nftId)
       return handlerResponse(StatusCode.NOT_FOUND, {
