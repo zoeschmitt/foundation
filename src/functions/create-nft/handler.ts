@@ -24,6 +24,7 @@ import getNFTContent from "src/utils/nft/get-nft-content";
 import mintNFT from "src/utils/nft/mint-nft";
 import nftContract from "../../../artifacts/contracts/NFT.sol/NFT.json";
 import getWalletWithId from "src/utils/wallet/get-wallet-with-id";
+import storeNFT from "src/utils/nft/store-nft";
 
 export const createNFT: APIGatewayProxyHandler = async (
   event: APIGatewayEvent,
@@ -79,6 +80,7 @@ export const createNFT: APIGatewayProxyHandler = async (
       });
 
     /// PIN TO IPFS -----------------------------------
+
     const nftStorageApiKey = (await getSecret(
       process.env.NFT_STORAGE_API_KEY
     )) as any;
@@ -205,24 +207,10 @@ export const createNFT: APIGatewayProxyHandler = async (
 
     console.log(newNFT);
 
-    // For multiple nft queries
-    await dynamoService.put({
-      TableName: DB_TABLE,
-      Item: {
-        PK: `ORG#${org.orgId}`,
-        SK: `WAL#${walletId}#NFT#${nftId}`,
-        ...newNFT,
-      },
-    });
-
-    // For single nft queries
-    await dynamoService.put({
-      TableName: DB_TABLE,
-      Item: {
-        PK: `ORG#${org.orgId}#NFT#${nftId}`,
-        SK: `ORG#${org.orgId}`,
-        ...newNFT,
-      },
+    await storeNFT({
+      nft: newNFT,
+      tableName: DB_TABLE,
+      dynamoService: dynamoService,
     });
 
     const nftResponse = await NFTUtils.formatNFT(newNFT);

@@ -22,6 +22,7 @@ import Web3 from "web3";
 import { getSecret } from "src/utils/get-secret";
 import nftContract from "../../../artifacts/contracts/NFT.sol/NFT.json";
 import NFTUtils from "src/utils/nft/nft-utils";
+import storeNFT from "src/utils/nft/store-nft";
 
 export const buyNFT: APIGatewayProxyHandler = async (
   event: APIGatewayEvent,
@@ -30,8 +31,7 @@ export const buyNFT: APIGatewayProxyHandler = async (
   const DB_TABLE = process.env.DB_TABLE;
   const dynamoService = new DynamoService();
   const transactionGas = "21000";
-  // transfer nft
-  // update nft info
+
   try {
     /// VALIDATE REQUESTS PARAMS -----------------------------------
 
@@ -204,24 +204,10 @@ export const buyNFT: APIGatewayProxyHandler = async (
     nft.isListed = false;
     nft.walletId = request.buyerWalletId;
 
-    // For multiple nft queries
-    await dynamoService.put({
-      TableName: DB_TABLE,
-      Item: {
-        PK: `ORG#${org.orgId}`,
-        SK: `WAL#${request.buyerWalletId}#NFT#${nftId}`,
-        ...nft,
-      },
-    });
-
-    // For single nft queries
-    await dynamoService.put({
-      TableName: DB_TABLE,
-      Item: {
-        PK: `ORG#${org.orgId}#NFT#${nftId}`,
-        SK: `ORG#${org.orgId}`,
-        ...nft,
-      },
+    await storeNFT({
+      nft: nft,
+      tableName: DB_TABLE,
+      dynamoService: dynamoService,
     });
 
     const nftResponse = await NFTUtils.formatNFT(nft);
