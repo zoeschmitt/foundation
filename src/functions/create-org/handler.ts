@@ -9,7 +9,7 @@ import { StatusCode } from "src/enums/status-code.enum";
 import { handlerResponse } from "src/utils/handler-response";
 import { CreateOrgRequest } from "src/types/requests/create-org-request.type";
 import { Org } from "src/types/org.type";
-import { ZWallet } from "src/types/z-wallet.type";
+import { WalletCryptoData } from "src/types/wallet-crypto-data.type";
 import createZWallet from "src/utils/wallet/create-z-wallet";
 import { v4 as uuid } from "uuid";
 import validator from "@middy/validator";
@@ -60,7 +60,7 @@ export const createOrg: APIGatewayProxyHandler = async (
     const ourWallet = (await getSecret(process.env.WALLET)) as any;
 
     /// CREATE ORG WALLET -----------------------------------
-    const orgWallet: ZWallet = await createZWallet();
+    const orgWallet: WalletCryptoData = await createZWallet();
 
     /// DEPLOY ORG CONTRACT -----------------------------------
     const alchemyApiKey = await getSecret(process.env.ALCHEMY_KEY);

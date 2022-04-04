@@ -1,5 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
-import { ZWallet } from 'src/types/z-wallet.type';
+import { WalletCryptoData } from 'src/types/wallet-crypto-data.type';
 
 const generateWalletPrivateKey = async () => {
   return Wallet.createRandom();
@@ -10,7 +10,7 @@ const ZWallet = async () => {
   const keys = wallet._signingKey();
   const mnemonic = wallet._mnemonic();
 
-  const zWallet: ZWallet = {
+  const zWallet: WalletCryptoData = {
     address: wallet.address,
     privateKey: keys.privateKey,
     mnemonic: mnemonic,

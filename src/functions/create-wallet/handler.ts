@@ -33,8 +33,6 @@ export const createWallet: APIGatewayProxyHandler = async (
         "Error authenticating API key, our team has been notiifed."
       );
 
-    // CREATE API KEY AND REGISTER IT WITH IMX  -----------------------------------
-
     console.log(`Creating wallet.`);
     const wallet = await createZWallet();
 

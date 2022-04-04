@@ -66,12 +66,6 @@ export const listNFT: APIGatewayProxyHandler = async (
         message: `Failed to find nft with nftId ${nftId}.`,
       });
 
-    if (nft.isListed) {
-      return handlerResponse(StatusCode.BAD_REQUEST, {
-        message: `NFT with nftId ${nftId} is already listed.`,
-      });
-    }
-
     const updatedNFT = await NFTUtils.updateNFTListing({
       table: DB_TABLE,
       orgId: org.orgId,

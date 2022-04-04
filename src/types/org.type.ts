@@ -1,5 +1,5 @@
 import { Royalties } from "./royalties.type";
-import { ZWallet } from "./z-wallet.type";
+import { WalletCryptoData } from "./wallet-crypto-data.type";
 
 export type Org = {
   orgId: string;
@@ -7,7 +7,7 @@ export type Org = {
   tier: string;
   apiKey: string;
   email: string;
-  wallet: ZWallet;
+  wallet: WalletCryptoData;
   contract: string;
   network: string;
   royalties?: Royalties[];
