@@ -1,6 +1,6 @@
-# Polygon Marketplace API
+# Foundation
 
-An API allowing anyone to create an [NFT](https://eips.ethereum.org/EIPS/eip-721) (ERC721 Token) marketplace on their platforms with just a few endpoints.
+Foundation is a digital asset marketplace engine that allows anyone to easily create an [NFT](https://eips.ethereum.org/EIPS/eip-721) (ERC721 Token) marketplace on their platform. Built on top of the [Polygon blockchain](https://polygon.technology/).
 
 Main Features:
 
@@ -20,6 +20,7 @@ Main Features:
 - [Hardhat](https://hardhat.org/)
 - [NFT Storage](https://nft.storage/)
 - [AWS](https://www.npmjs.com/package/aws-sdk)
+- [Alchemy](https://www.alchemy.com/)
 
 ---
 
