@@ -12,6 +12,7 @@ import getUserNFTs from "@functions/get-user-nfts";
 import listNFT from "@functions/list-nft";
 import getOrgWallet from "@functions/get-org-wallet";
 import buyNFT from "@functions/buy-nft";
+import getBalance from "@functions/get-balance";
 
 const serverlessConfiguration: AWS = {
   service: "polygon-api",
@@ -73,7 +74,8 @@ const serverlessConfiguration: AWS = {
     getUserNFTs,
     listNFT,
     getOrgWallet,
-    buyNFT
+    buyNFT,
+    getBalance
   },
   package: { individually: true },
   custom: {
