@@ -150,7 +150,7 @@ export const createNFT: APIGatewayProxyHandler = async (
       if (ipfsNFTRes.data) {
         console.log(ipfsNFTRes.data);
         metadata.file = ipfsNFTRes.data["properties"]["nft"];
-        metadata.image = ipfsNFTRes.data["image"];
+        metadata.image = ipfsLink + ipfsNFTRes.data["image"].split("//")[1];
       }
     } catch (e) {
       console.log(e);
