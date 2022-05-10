@@ -139,23 +139,6 @@ export const createNFT: APIGatewayProxyHandler = async (
     const tokenURI = ipfsLink + nftStorageResponse.ipnft + "/metadata.json";
     metadata.nft = tokenURI;
 
-    try {
-      console.log(
-        `Checking ipfs link for nft hash: ${nftStorageResponse.ipnft}`
-      );
-      const ipfsNFTRes = await axios.get(
-        ipfsLink + nftStorageResponse.ipnft + "/metadata.json",
-        { timeout: 3000 }
-      );
-      if (ipfsNFTRes.data) {
-        console.log(ipfsNFTRes.data);
-        metadata.file = ipfsNFTRes.data["properties"]["nft"];
-        metadata.image = ipfsNFTRes.data["image"];
-      }
-    } catch (e) {
-      console.log(e);
-    }
-
     /// MINT -----------------------------------
 
     const alchemyApiKey = (await getSecret(process.env.ALCHEMY_KEY)) as any;
@@ -173,6 +156,25 @@ export const createNFT: APIGatewayProxyHandler = async (
     });
 
     console.log(`NFT with tokenId ${tokenId} minted. Txn ${transactionHash}`);
+
+    /// CHEKCK FOR UPDATED IPFS LINK -----------------------------------
+
+    try {
+      console.log(
+        `Checking ipfs link for nft hash: ${nftStorageResponse.ipnft}`
+      );
+      const ipfsNFTRes = await axios.get(
+        ipfsLink + nftStorageResponse.ipnft + "/metadata.json",
+        { timeout: 5000 }
+      );
+      if (ipfsNFTRes.data) {
+        console.log(ipfsNFTRes.data);
+        metadata.file = ipfsNFTRes.data["properties"]["nft"];
+        metadata.image = ipfsLink + ipfsNFTRes.data["image"].split("//")[1];
+      }
+    } catch (e) {
+      console.log(e);
+    }
 
     /// STORE NFT DATA IN DYNAMO -----------------------------------
 

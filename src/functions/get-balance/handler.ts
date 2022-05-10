@@ -51,9 +51,12 @@ export const getBalance: APIGatewayProxyHandler = async (
     const balance = web3.utils.fromWei(
       await web3.eth.getBalance(userWallet.wallet.address)
     );
-    
+
     console.log(`getBalance Finished successfully - balance: ${balance}.`);
-    return handlerResponse(StatusCode.OK, { balance: balance });
+    return handlerResponse(StatusCode.OK, {
+      balance: balance,
+      address: userWallet.wallet.address,
+    });
   } catch (e) {
     console.log(`getBalance error: ${e.toString()}`);
     return handlerResponse(StatusCode.ERROR, {
