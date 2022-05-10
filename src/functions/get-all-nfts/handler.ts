@@ -39,8 +39,6 @@ export const getAllNFTs: APIGatewayProxyHandler = async (
         "We couldn't find any nfts associated with your organization, please review your request or contact support."
       );
 
-    console.log(nftQuery.Items);
-
     const nfts = await NFTUtils.formatNFTList(nftQuery.Items);
 
     console.log(`getAllNFTs Finished successfully`);
