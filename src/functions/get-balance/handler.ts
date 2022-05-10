@@ -55,7 +55,7 @@ export const getBalance: APIGatewayProxyHandler = async (
     console.log(`getBalance Finished successfully - balance: ${balance}.`);
     return handlerResponse(StatusCode.OK, {
       balance: balance,
-      address: userWallet.address,
+      address: userWallet.wallet.address,
     });
   } catch (e) {
     console.log(`getBalance error: ${e.toString()}`);
