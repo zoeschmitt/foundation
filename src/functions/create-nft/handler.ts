@@ -30,7 +30,7 @@ export const createNFT: APIGatewayProxyHandler = async (
   event: APIGatewayEvent,
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
-  console.log(event);
+  // console.log(event);
 
   /// REQUEST VALIDATION -----------------------------------
 
@@ -40,7 +40,7 @@ export const createNFT: APIGatewayProxyHandler = async (
     });
 
   const walletId = event.queryStringParameters.walletId;
-  const nft: CreateNFTRequest = event.body as any;
+  const nft: CreateNFTRequest = JSON.parse(event.body);
 
   try {
     await validateRequest(nft);
@@ -231,7 +231,8 @@ export const createNFT: APIGatewayProxyHandler = async (
 };
 
 const validateRequest = async (nft: CreateNFTRequest) => {
-  console.log(nft);
+  console.log(nft.metadata);
+  console.log(nft.filename);
 
   /// METADATA
 
