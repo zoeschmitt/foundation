@@ -8,10 +8,6 @@ import middy from "@middy/core";
 import httpErrorHandler from "@middy/http-error-handler";
 import { handlerResponse } from "src/utils/handler-response";
 import { StatusCode } from "src/enums/status-code.enum";
-import jsonBodyParser from "@middy/http-json-body-parser";
-import validator from "@middy/validator";
-import jsonSchemaError from "src/middleware/json-schema-error";
-import inputSchema from "./schema";
 import DynamoService from "src/services/dynamo.service";
 import { NFT } from "src/types/nft.type";
 import { getOrgWithApiKey } from "src/utils/org/get-org-with-api-key";
@@ -42,7 +38,7 @@ export const buyNFT: APIGatewayProxyHandler = async (
 
     const nftId = event.queryStringParameters.nftId;
 
-    const request: BuyNFTRequest = event.body as any;
+    const request: BuyNFTRequest = JSON.parse(event.body);
 
     /// GET ORG -----------------------------------
 
@@ -57,7 +53,7 @@ export const buyNFT: APIGatewayProxyHandler = async (
     const params = {
       TableName: DB_TABLE,
       Key: {
-        PK: `ORG#${org.orgId}#NFT#${nftId}`,
+        PK: `ORG#${org.orgId}#NFT#${nftId.toLowerCase()}`,
         SK: `ORG#${org.orgId}`,
       },
     };
@@ -67,13 +63,6 @@ export const buyNFT: APIGatewayProxyHandler = async (
     if (!nft)
       return handlerResponse(StatusCode.NOT_FOUND, {
         message: `Failed to find nft with nftId ${nftId}.`,
-      });
-
-    /// CHECK SELLER IS OWNER -----------------------------------
-
-    if (request.sellerWalletId !== nft.walletId)
-      return handlerResponse(StatusCode.NOT_FOUND, {
-        message: `Seller with walletId ${request.sellerWalletId} is not the owner of nft with nftId ${nftId}.`,
       });
 
     /// GET BUYER/SELLER WALLETS -----------------------------------
@@ -92,14 +81,14 @@ export const buyNFT: APIGatewayProxyHandler = async (
 
     const sellerWallet = await getWalletWithId(
       org.orgId,
-      request.sellerWalletId,
+      nft.walletId,
       dynamoService,
       DB_TABLE
     );
 
     if (!sellerWallet)
       return handlerResponse(StatusCode.NOT_FOUND, {
-        message: `Failed to find wallet with walletId ${request.sellerWalletId}.`,
+        message: `Failed to find wallet with walletId ${nft.walletId}.`,
       });
 
     console.log(
@@ -181,22 +170,26 @@ export const buyNFT: APIGatewayProxyHandler = async (
 
     console.log(`Deleting old nft entries...`);
 
-    await dynamoService.delete({
-      TableName: DB_TABLE,
-      Key: {
-        PK: `ORG#${org.orgId}`,
-        SK: `WAL#${request.sellerWalletId}#NFT#${nftId}`,
-      },
-    });
+    await dynamoService
+      .delete({
+        TableName: DB_TABLE,
+        Key: {
+          PK: `ORG#${org.orgId}`,
+          SK: `WAL#${nft.walletId}#NFT#${nftId}`,
+        },
+      })
+      .catch((err) => console.log(err));
 
-    await dynamoService.delete({
-      TableName: DB_TABLE,
-      Key: {
-        PK: `ORG#${org.orgId}#NFT#${nftId}`,
-        SK: `ORG#${org.orgId}`,
-      },
-    });
-
+    await dynamoService
+      .delete({
+        TableName: DB_TABLE,
+        Key: {
+          PK: `ORG#${org.orgId}#NFT#${nftId}`,
+          SK: `ORG#${org.orgId}`,
+        },
+      })
+      .catch((err) => console.log(err));
+      
     // New NFT entries
 
     console.log(`Adding new nft entries...`);
@@ -224,19 +217,4 @@ export const buyNFT: APIGatewayProxyHandler = async (
   }
 };
 
-export const main = middy(buyNFT)
-  .use(jsonBodyParser())
-  .use(
-    validator({
-      inputSchema,
-      ajvOptions: {
-        strict: true,
-        coerceTypes: "array",
-        allErrors: true,
-        useDefaults: "empty",
-        messages: false,
-      },
-    })
-  )
-  .use(jsonSchemaError())
-  .use(httpErrorHandler());
+export const main = middy(buyNFT).use(httpErrorHandler());

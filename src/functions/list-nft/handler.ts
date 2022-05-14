@@ -8,10 +8,6 @@ import middy from "@middy/core";
 import httpErrorHandler from "@middy/http-error-handler";
 import { handlerResponse } from "src/utils/handler-response";
 import { StatusCode } from "src/enums/status-code.enum";
-import jsonBodyParser from "@middy/http-json-body-parser";
-import validator from "@middy/validator";
-import jsonSchemaError from "src/middleware/json-schema-error";
-import inputSchema from "./schema";
 import { getOrgWithApiKey } from "src/utils/org/get-org-with-api-key";
 import { Org } from "src/types/org.type";
 import DynamoService from "src/services/dynamo.service";
@@ -38,7 +34,7 @@ export const listNFT: APIGatewayProxyHandler = async (
 
     const nftId = event.queryStringParameters.nftId;
 
-    const request = event.body as any;
+    const request = JSON.parse(event.body);
 
     if (!request || request.listPrice === undefined) {
       return handlerResponse(StatusCode.NOT_FOUND, {
@@ -59,7 +55,7 @@ export const listNFT: APIGatewayProxyHandler = async (
     const params = {
       TableName: DB_TABLE,
       Key: {
-        PK: `ORG#${org.orgId}#NFT#${nftId}`,
+        PK: `ORG#${org.orgId}#NFT#${nftId.toLowerCase()}`,
         SK: `ORG#${org.orgId}`,
       },
     };
@@ -98,18 +94,4 @@ export const listNFT: APIGatewayProxyHandler = async (
 };
 
 export const main = middy(listNFT)
-  .use(jsonBodyParser())
-  .use(
-    validator({
-      inputSchema,
-      ajvOptions: {
-        strict: true,
-        coerceTypes: "array",
-        allErrors: true,
-        useDefaults: "empty",
-        messages: false,
-      },
-    })
-  )
-  .use(jsonSchemaError())
   .use(httpErrorHandler());
