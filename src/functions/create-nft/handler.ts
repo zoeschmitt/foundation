@@ -39,7 +39,7 @@ export const createNFT: APIGatewayProxyHandler = async (
       message: "walletId not found in path.",
     });
 
-  const walletId = event.queryStringParameters.walletId;
+  const walletId = event.queryStringParameters.walletId.toLowerCase();
   const nft: CreateNFTRequest = JSON.parse(event.body);
 
   try {
